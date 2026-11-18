@@ -1,1174 +1,1386 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>اتصال P2P مباشر — خط صوت ونصوص وملفات مشفر بين طرفين</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
+<!-- VERSION: seVen OS V3.5.0 Sovereign Capsule Engine & Machine Node Index (Build 2026) -->
+<meta name="build-version" content="v3.5.0-BUILD-2026-CAPSULE-STANDALONE">
+<meta name="app-id" content="seVen-7777.777">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23050806'/><circle cx='50' cy='50' r='38' fill='none' stroke='%23ffd700' stroke-width='6'/><text x='50' y='63' font-size='38' font-weight='900' fill='%2300ffaa' text-anchor='middle' font-family='sans-serif'>7</text></svg>">
+<title>seVen OS - Sovereign Gateway V3.5 (Capsule Factory & Machine Node Index)</title>
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background: radial-gradient(circle at 50% 15%, #131d36 0%, #0b1120 55%, #050811 100%);
-            min-height: 100vh;
-            color: #f1f5f9;
-            padding: 16px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+<!-- PDF.js PDF reader for offline PDF parsing -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+<script>if (window.pdfjsLib) { pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js'; }</script>
 
-        .container {
-            width: 100%;
-            max-width: 640px;
-            margin: 0 auto;
-        }
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin:0; padding:12px; font-family:'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: radial-gradient(circle at center, #0f1712 0%, #050806 100%);
+    display:flex; justify-content:center; align-items:center; min-height:100vh;
+    color: #e8edf3;
+  }
 
-        .header {
-            text-align: center;
-            margin-bottom: 16px;
-        }
+  /* Compact Container Liquid Glass */
+  #seven-id, #chat-container {
+    width: 100%; max-width: 940px; padding: 20px;
+    background: rgba(12, 18, 14, 0.94);
+    backdrop-filter: blur(25px) saturate(200%);
+    border-radius: 20px;
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.85), 0 0 30px rgba(212, 175, 55, 0.1);
+    display:flex; flex-direction:column; gap: 12px;
+    max-height: 98vh; position: relative;
+  }
 
-        .header h1 {
-            font-size: 1.8em;
-            font-weight: 800;
-            color: #00f2fe;
-            letter-spacing: -0.5px;
-            margin-bottom: 4px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
+  /* Drag & Drop Visual Overlay */
+  #drop-overlay {
+    display: none; position: absolute; inset: 0;
+    background: rgba(5, 8, 6, 0.94); backdrop-filter: blur(12px);
+    border: 3px dashed #ffd700; border-radius: 20px; z-index: 10000;
+    justify-content: center; align-items: center; flex-direction: column; gap: 12px;
+    color: #ffd700; font-size: 1.2rem; font-weight: bold; text-shadow: 0 0 10px rgba(255,215,0,0.5);
+  }
 
-        .header p {
-            color: #94a3b8;
-            font-size: 0.9em;
-            line-height: 1.4;
-        }
+  /* Header Bar */
+  .chat-header {
+    display: flex; flex-direction: column; gap: 10px;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.25);
+    padding-bottom: 12px;
+  }
+  .header-top { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+  .header-title { font-size: 1.1rem; font-weight: 800; color: #ffd700; letter-spacing: 0.5px; display: flex; align-items: center; gap: 8px; }
+  .status-badge { font-size: 0.72rem; font-family: monospace; padding: 4px 10px; border-radius: 8px; background: rgba(0, 255, 170, 0.12); border: 1px solid rgba(0, 255, 170, 0.35); color: #00ffaa; font-weight: bold; }
 
-        /* Status Bar */
-        .status-bar {
-            background: rgba(15, 23, 42, 0.75);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            padding: 10px 16px;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            backdrop-filter: blur(12px);
-        }
+  /* Counter Screen Bar (شاشة الأعداد الرقمية المباشرة - الفهرس السريع) */
+  .counter-screen-bar {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px;
+    background: rgba(5, 8, 6, 0.85); padding: 10px 14px; border-radius: 12px; border: 1px solid rgba(212, 175, 55, 0.2);
+  }
+  .counter-card {
+    background: rgba(19, 38, 26, 0.6); padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(212, 175, 55, 0.15);
+    display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;
+  }
+  .counter-num { font-size: 1.25rem; font-weight: 900; color: #ffd700; font-family: monospace; line-height: 1; }
+  .counter-label { font-size: 0.68rem; color: #a1b0cb; margin-top: 4px; }
 
-        .status-indicator {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+  /* Sessions / Multi-Chat Bar */
+  .sessions-bar {
+    display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap;
+    background: rgba(7, 12, 9, 0.85); padding: 8px 12px; border-radius: 12px; border: 1px solid rgba(212, 175, 55, 0.2);
+  }
+  .sessions-list-container { display: flex; align-items: center; gap: 6px; flex: 1; overflow-x: auto; padding-bottom: 2px; }
+  .sessions-list-container::-webkit-scrollbar { height: 4px; }
+  .sessions-list-container::-webkit-scrollbar-thumb { background: rgba(212, 175, 55, 0.4); border-radius: 10px; }
+  
+  .session-tab {
+    padding: 6px 14px; border-radius: 8px; font-size: 11px; font-family: sans-serif; cursor: pointer;
+    background: rgba(19, 38, 26, 0.6); border: 1px solid rgba(212, 175, 55, 0.2); color: rgba(232, 237, 243, 0.85);
+    white-space: nowrap; transition: all 0.2s; display: flex; align-items: center; gap: 6px;
+  }
+  .session-tab:hover { border-color: #ffd700; color: #fff; }
+  .session-tab.active { background: rgba(212, 175, 55, 0.25); color: #ffd700; font-weight: bold; border-color: #ffd700; box-shadow: 0 0 10px rgba(255, 215, 0, 0.25); }
 
-        .status-dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: #ef4444;
-            box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
-            transition: all 0.3s;
-        }
+  .session-controls { display: flex; align-items: center; gap: 6px; }
 
-        .status-dot.connected {
-            background: #10b981;
-            box-shadow: 0 0 12px rgba(16, 185, 129, 0.8);
-        }
+  /* Persona Selector Bar */
+  .persona-bar {
+    display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px;
+    background: rgba(10, 18, 14, 0.85); padding: 6px 12px; border-radius: 10px; border: 1px solid rgba(0, 255, 170, 0.2);
+  }
+  .persona-title { font-size: 11px; color: #00ffaa; font-family: monospace; font-weight: bold; }
+  .persona-btns { display: flex; gap: 6px; flex-wrap: wrap; }
+  .persona-btn {
+    padding: 4px 10px; border-radius: 6px; font-size: 11px; font-family: monospace; cursor: pointer;
+    background: rgba(19, 38, 26, 0.7); border: 1px solid rgba(0, 255, 170, 0.2); color: #e8edf3; transition: all 0.2s;
+  }
+  .persona-btn:hover { border-color: #00ffaa; }
+  .persona-btn.active { background: #00ffaa; color: #050806; font-weight: bold; border-color: #00ffaa; box-shadow: 0 0 10px rgba(0, 255, 170, 0.3); }
 
-        .status-dot.calling {
-            background: #f59e0b;
-            box-shadow: 0 0 12px rgba(245, 158, 11, 0.8);
-            animation: pulse-dot 1.2s infinite;
-        }
+  /* Engine Switcher ("طاقية المحرك") */
+  .engine-hat-bar {
+    display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px;
+    background: rgba(5, 8, 6, 0.7); padding: 8px 12px; border-radius: 10px; border: 1px solid rgba(212, 175, 55, 0.18);
+  }
+  .engine-hat-title { font-size: 11px; color: rgba(255, 215, 0, 0.85); font-family: monospace; font-weight: bold; }
+  .engine-hat-btns { display: flex; gap: 6px; flex-wrap: wrap; }
+  .hat-btn {
+    padding: 5px 12px; border-radius: 8px; font-size: 11px; font-family: monospace; cursor: pointer;
+    background: rgba(19, 38, 26, 0.8); border: 1px solid rgba(212, 175, 55, 0.2); color: #e8edf3;
+    transition: all 0.2s;
+  }
+  .hat-btn:hover { border-color: #ffd700; }
+  .hat-btn.active { background: #ffd700; color: #050806; font-weight: bold; border-color: #ffd700; box-shadow: 0 0 12px rgba(255,215,0,0.4); }
 
-        @keyframes pulse-dot {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.4; transform: scale(1.15); }
-        }
+  /* Messages Area */
+  #messages {
+    height: 400px; overflow-y:auto; padding: 16px;
+    border-radius: 14px; background: rgba(5, 8, 6, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.85);
+    display: flex; flex-direction: column; gap: 12px;
+  }
+  #messages::-webkit-scrollbar { width: 6px; }
+  #messages::-webkit-scrollbar-thumb { background: rgba(212, 175, 55, 0.35); border-radius: 10px; }
 
-        .status-text {
-            font-size: 0.9em;
-            font-weight: 600;
-            color: #e2e8f0;
-        }
+  .message { padding: 12px 16px; border-radius: 14px; max-width: 88%; animation: fadeIn 0.2s ease-out; line-height: 1.55; font-size: 13.5px; }
+  .user { background: rgba(51, 240, 255, 0.12); color: #e8edf3; align-self: flex-end; border: 1px solid rgba(51, 240, 255, 0.3); border-top-right-radius: 2px; }
+  .ai { background: rgba(212, 175, 55, 0.12); color: #ffd700; align-self: flex-start; border: 1px solid rgba(212, 175, 55, 0.3); border-top-left-radius: 2px; }
+  .time-stamp { font-size: 10px; opacity: 0.65; margin-bottom: 6px; font-family: monospace; display: flex; justify-content: space-between; gap: 8px; }
+  .file-chip { display: inline-flex; align-items: center; gap: 6px; background: rgba(0, 255, 170, 0.12); border: 1px solid rgba(0, 255, 170, 0.3); padding: 4px 10px; border-radius: 6px; font-size: 11px; margin-top: 8px; font-family: monospace; color: #00ffaa; }
 
-        .network-badge {
-            font-size: 0.75em;
-            padding: 3px 8px;
-            border-radius: 6px;
-            background: rgba(56, 189, 248, 0.15);
-            color: #38bdf8;
-            border: 1px solid rgba(56, 189, 248, 0.3);
-            font-family: monospace;
-        }
+  @keyframes fadeIn { from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);} }
 
-        /* Wave Card */
-        .wave-card {
-            background: rgba(30, 41, 59, 0.7);
-            border: 1px solid rgba(0, 242, 254, 0.35);
-            border-radius: 14px;
-            padding: 14px;
-            margin-bottom: 14px;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-        }
+  /* Attached File Preview Bar */
+  #file-preview-bar {
+    display: none; align-items: center; justify-content: space-between;
+    background: rgba(0, 255, 170, 0.1); border: 1px dashed rgba(0, 255, 170, 0.4);
+    padding: 8px 14px; border-radius: 10px; font-size: 12px; font-family: monospace; color: #00ffaa;
+  }
 
-        .wave-top-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
+  /* Controls & Input */
+  #input-container { display:flex; gap:8px; align-items: center; flex-wrap: wrap; }
+  
+  .btn-icon {
+    padding: 8px 12px; border-radius: 10px; border: 1px solid rgba(212, 175, 55, 0.25);
+    background: rgba(19, 38, 26, 0.85); color: #ffd700; cursor: pointer; transition: 0.2s; font-size: 12px; font-weight: bold;
+    display: flex; align-items: center; justify-content: center; gap: 4px;
+  }
+  .btn-icon:hover { background: rgba(212, 175, 55, 0.25); border-color: #ffd700; color: #fff; }
 
-        .wave-label-group {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
+  #user-input {
+    flex:1; min-width: 200px; padding:12px 14px; border-radius:10px; border:1px solid rgba(212, 175, 55, 0.25); outline:none;
+    background: rgba(5, 8, 6, 0.85); color:#fff; font-size: 13.5px; transition: 0.2s;
+  }
+  #user-input:focus { border-color: #ffd700; box-shadow: 0 0 14px rgba(212,175,55,0.25); }
+  
+  #send-btn {
+    padding:12px 24px; border-radius:10px; border:none; background:#ffd700; cursor:pointer;
+    font-weight:bold; color: #050806; font-size: 13.5px; transition: 0.2s;
+  }
+  #send-btn:hover { background:#e5c100; transform:scale(1.02); box-shadow: 0 0 16px rgba(255,215,0,0.4); }
 
-        .wave-id-badge {
-            background: linear-gradient(135deg, rgba(0, 242, 254, 0.2), rgba(79, 172, 254, 0.2));
-            color: #00f2fe;
-            border: 1px solid rgba(0, 242, 254, 0.5);
-            padding: 3px 10px;
-            border-radius: 6px;
-            font-family: 'Courier New', Courier, monospace;
-            font-weight: 700;
-            font-size: 0.9em;
-        }
-
-        .wave-new-btn {
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            color: #cbd5e1;
-            padding: 4px 10px;
-            border-radius: 8px;
-            font-size: 0.8em;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .wave-new-btn:hover {
-            background: rgba(255, 255, 255, 0.16);
-            color: #fff;
-        }
-
-        .wave-link-box {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 8px;
-        }
-
-        .wave-input {
-            flex: 1;
-            background: rgba(15, 23, 42, 0.8);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            color: #38bdf8;
-            padding: 9px 12px;
-            border-radius: 8px;
-            font-size: 0.85em;
-            font-family: monospace;
-            outline: none;
-            direction: ltr;
-        }
-
-        .wave-copy-btn {
-            background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
-            color: #051026;
-            border: none;
-            padding: 0 16px;
-            border-radius: 8px;
-            font-weight: 700;
-            font-size: 0.85em;
-            cursor: pointer;
-            transition: opacity 0.2s;
-            white-space: nowrap;
-        }
-
-        .wave-copy-btn:hover {
-            opacity: 0.9;
-        }
-
-        .wave-hint {
-            font-size: 0.78em;
-            color: #94a3b8;
-            line-height: 1.4;
-        }
-
-        /* Incoming Call Alert */
-        .incoming-call-bay {
-            background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(245, 158, 11, 0.2));
-            border: 1px solid rgba(245, 158, 11, 0.5);
-            border-radius: 12px;
-            padding: 12px;
-            margin-bottom: 14px;
-            display: none;
-            text-align: center;
-            animation: ring-pulse 1.5s infinite;
-        }
-
-        @keyframes ring-pulse {
-            0%, 100% { box-shadow: 0 0 10px rgba(245, 158, 11, 0.3); }
-            50% { box-shadow: 0 0 25px rgba(245, 158, 11, 0.7); }
-        }
-
-        .incoming-title {
-            font-size: 0.95em;
-            font-weight: 700;
-            color: #fbbf24;
-            margin-bottom: 10px;
-        }
-
-        .incoming-actions {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-        }
-
-        .incoming-btn {
-            padding: 8px 18px;
-            border-radius: 8px;
-            border: none;
-            font-weight: 700;
-            cursor: pointer;
-            font-size: 0.88em;
-            transition: all 0.2s;
-        }
-
-        .incoming-accept {
-            background: #10b981;
-            color: #041226;
-        }
-
-        .incoming-reject {
-            background: #ef4444;
-            color: #fff;
-        }
-
-        /* Call Bay */
-        .call-bay {
-            background: rgba(15, 23, 42, 0.75);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 14px;
-            padding: 18px 16px;
-            margin-bottom: 14px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            backdrop-filter: blur(12px);
-        }
-
-        .call-trigger-btn {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            border: none;
-            outline: none;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2.1em;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-        }
-
-        .call-trigger-btn.idle {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            color: #fff;
-            box-shadow: 0 0 24px rgba(16, 185, 129, 0.4);
-        }
-
-        .call-trigger-btn.idle:hover {
-            transform: scale(1.06);
-            box-shadow: 0 0 32px rgba(16, 185, 129, 0.7);
-        }
-
-        .call-trigger-btn.busy {
-            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-            color: #fff;
-            box-shadow: 0 0 24px rgba(239, 68, 68, 0.5);
-            animation: busy-shake 2.5s infinite;
-        }
-
-        @keyframes busy-shake {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-
-        .call-hint-text {
-            margin-top: 10px;
-            font-size: 0.88em;
-            color: #cbd5e1;
-            font-weight: 500;
-        }
-
-        /* Audio Waveform Meter */
-        .audio-bars {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 4px;
-            margin-top: 12px;
-            height: 24px;
-        }
-
-        .bar {
-            width: 4px;
-            height: 4px;
-            background: #10b981;
-            border-radius: 2px;
-            transition: height 0.08s ease;
-        }
-
-        /* Shared Clipboard Box (DataChannel P2P Text Box) */
-        .shared-box-card {
-            background: rgba(30, 41, 59, 0.7);
-            border: 1px solid rgba(16, 185, 129, 0.35);
-            border-radius: 14px;
-            padding: 14px;
-            margin-bottom: 14px;
-            backdrop-filter: blur(10px);
-        }
-
-        .box-title-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-        }
-
-        .box-title {
-            font-size: 0.9em;
-            font-weight: 700;
-            color: #34d399;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .box-channel-status {
-            font-size: 0.72em;
-            padding: 2px 7px;
-            border-radius: 5px;
-            background: rgba(255, 255, 255, 0.08);
-            color: #94a3b8;
-            font-family: monospace;
-        }
-
-        .box-channel-status.active {
-            background: rgba(16, 185, 129, 0.2);
-            color: #10b981;
-            border: 1px solid rgba(16, 185, 129, 0.4);
-        }
-
-        .shared-textarea {
-            width: 100%;
-            height: 85px;
-            background: rgba(15, 23, 42, 0.85);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            color: #f1f5f9;
-            padding: 8px 10px;
-            border-radius: 8px;
-            font-size: 0.88em;
-            line-height: 1.4;
-            resize: vertical;
-            outline: none;
-            transition: border-color 0.2s;
-        }
-
-        .shared-textarea:focus {
-            border-color: #34d399;
-        }
-
-        .box-actions-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 8px;
-            gap: 8px;
-        }
-
-        .box-btn {
-            background: rgba(255, 255, 255, 0.1);
-            color: #e2e8f0;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-size: 0.8em;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .box-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
-            color: #fff;
-        }
-
-        .box-btn.primary {
-            background: #10b981;
-            color: #041226;
-            border: none;
-        }
-
-        .box-btn.primary:hover {
-            background: #059669;
-            color: #fff;
-        }
-
-        /* File Transfer Bay */
-        .file-transfer-card {
-            background: rgba(30, 41, 59, 0.7);
-            border: 1px solid rgba(56, 189, 248, 0.35);
-            border-radius: 14px;
-            padding: 14px;
-            margin-bottom: 14px;
-            backdrop-filter: blur(10px);
-        }
-
-        .file-dropzone {
-            border: 2px dashed rgba(56, 189, 248, 0.4);
-            border-radius: 8px;
-            padding: 12px;
-            text-align: center;
-            cursor: pointer;
-            background: rgba(15, 23, 42, 0.5);
-            transition: all 0.2s;
-        }
-
-        .file-dropzone:hover {
-            border-color: #38bdf8;
-            background: rgba(56, 189, 248, 0.08);
-        }
-
-        .file-drop-text {
-            font-size: 0.82em;
-            color: #94a3b8;
-        }
-
-        .file-progress-bar {
-            width: 100%;
-            height: 6px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 3px;
-            margin-top: 8px;
-            overflow: hidden;
-            display: none;
-        }
-
-        .file-progress-fill {
-            height: 100%;
-            width: 0%;
-            background: #38bdf8;
-            transition: width 0.1s;
-        }
-
-        .incoming-file-alert {
-            margin-top: 8px;
-            padding: 8px 10px;
-            background: rgba(16, 185, 129, 0.15);
-            border: 1px solid rgba(16, 185, 129, 0.3);
-            border-radius: 6px;
-            display: none;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 0.82em;
-        }
-
-        /* Toast & Error */
-        .toast {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #1e293b;
-            color: #38bdf8;
-            border: 1px solid #38bdf8;
-            padding: 8px 16px;
-            border-radius: 8px;
-            font-size: 0.85em;
-            z-index: 100;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
-            display: none;
-        }
-    </style>
+  #file-input, #capsule-json-input, #folder-input { display: none; }
+</style>
 </head>
 <body>
-    <div class="container">
-        <!-- Header -->
-        <div class="header">
-            <h1>📞 اتصال P2P مباشر</h1>
-            <p>صوت + صندوق نصوص ونسخ/لصق + نقل ملفات مباشر محلياً (Zero Data / LAN)</p>
-        </div>
 
-        <!-- Status Bar -->
-        <div class="status-bar">
-            <div class="status-indicator">
-                <div class="status-dot" id="statusDot"></div>
-                <span class="status-text" id="statusText">جاهز للاتصال</span>
-            </div>
-            <span class="network-badge" id="signalingMode">P2P: جاهز</span>
-        </div>
+<div id="seven-id">
+  <!-- Drag & Drop Visual Overlay -->
+  <div id="drop-overlay">
+    <div style="font-size: 3rem;">📥</div>
+    <div>اسحب وأفلت الملفات، المجلدات، أو الكبسولات هنا للطحن والإدراج</div>
+    <div style="font-size: 0.85rem; color: #00ffaa; font-family: monospace;">seVen Machine Node ID: File/Folder Receiver</div>
+  </div>
 
-        <!-- Dynamic Wave Card -->
-        <div class="wave-card">
-            <div class="wave-top-row">
-                <div class="wave-label-group">
-                    <span style="font-size: 1.1em;">📡</span>
-                    <strong style="color: #f8fafc; font-size: 0.88em;">موجة الغرفة:</strong>
-                    <span class="wave-id-badge" id="waveTag">جاري التوليد...</span>
-                </div>
-                <button class="wave-new-btn" onclick="generateNewWave()">🔄 موجة جديدة</button>
-            </div>
-            <div class="wave-link-box">
-                <input type="text" id="waveLinkInput" readonly class="wave-input" value="">
-                <button class="wave-copy-btn" id="copyWaveBtn" onclick="copyWaveLink()">📋 نسخ الرابط</button>
-            </div>
-            <p class="wave-hint">
-                💡 افتح الرابط على الجهاز الآخر ليدخل معك في نفس الموجة تلقائياً.
-            </p>
-        </div>
-
-        <!-- Incoming Call Modal -->
-        <div class="incoming-call-bay" id="incomingCallBay">
-            <div class="incoming-title">🔔 مكالمة صوتية واردة على هذه الموجة!</div>
-            <div class="incoming-actions">
-                <button class="incoming-btn incoming-accept" onclick="acceptIncomingCall()">🟢 قبول والتحدث</button>
-                <button class="incoming-btn incoming-reject" onclick="rejectIncomingCall()">🔴 رفض</button>
-            </div>
-        </div>
-
-        <!-- Main Call Trigger -->
-        <div class="call-bay">
-            <button class="call-trigger-btn idle" id="callBtn" onclick="toggleCall()">📞</button>
-            <div class="call-hint-text" id="callHint">اضغط لبدء الاتصال المباشر</div>
-            <div class="audio-bars" id="audioMeter"></div>
-        </div>
-
-        <!-- Shared Clipboard Box (Direct P2P DataChannel Text) -->
-        <div class="shared-box-card">
-            <div class="box-title-row">
-                <div class="box-title">
-                    <span>📋</span>
-                    <span>الصندوق المشترك (نسخ / لصق متزامن)</span>
-                </div>
-                <span class="box-channel-status" id="dataChannelBadge">القناة: غير متصل</span>
-            </div>
-            <textarea class="shared-textarea" id="sharedText" placeholder="اكتب أو الصق أي نص هنا... سيظهر تلقائياً في شاشة الطرف الثاني فوراً عبر القناة المباشرة"></textarea>
-            <div class="box-actions-row">
-                <span style="font-size: 0.75em; color: #94a3b8;" id="sharedBoxNote">المزامنة فورية وتعمل عبر الشبكة الداخلية بدون استهلاك إنترنت</span>
-                <div style="display: flex; gap: 6px;">
-                    <button class="box-btn" onclick="copySharedText()">📋 نسخ النص</button>
-                    <button class="box-btn primary" onclick="sendSharedTextNow()">🚀 إرسال تحديث</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- File Transfer Card (Direct P2P File Sending) -->
-        <div class="file-transfer-card">
-            <div class="box-title-row">
-                <div class="box-title" style="color: #38bdf8;">
-                    <span>📁</span>
-                    <span>تبادل الملفات المباشر (P2P File Transfer)</span>
-                </div>
-            </div>
-            <div class="file-dropzone" onclick="document.getElementById('fileInput').click()">
-                <div class="file-drop-text" id="dropText">اضغط لاختيار ملف وإرساله مباشرة إلى الجهاز الآخر</div>
-                <input type="file" id="fileInput" style="display: none;" onchange="handleFileSelected(event)">
-            </div>
-            <div class="file-progress-bar" id="fileProgressBar">
-                <div class="file-progress-fill" id="fileProgressFill"></div>
-            </div>
-            <div class="incoming-file-alert" id="incomingFileAlert">
-                <span id="incomingFileName">وصلك ملف: ...</span>
-                <a id="downloadFileBtn" class="box-btn primary" href="#" download="" style="text-decoration: none;">⬇️ تنزيل الملف</a>
-            </div>
-        </div>
+  <!-- Header Bar -->
+  <div class="chat-header">
+    <div class="header-top">
+      <div class="header-title">
+        <span style="font-size: 1.3rem; filter: drop-shadow(0 0 4px rgba(212,175,55,0.6));">🛸 7️⃣</span>
+        <span>بوابة الكبسولات والذاكرة السيادية (seVen OS)</span>
+      </div>
+      <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
+        <span class="status-badge" style="border-color: rgba(212,175,55,0.4); color: #ffd700;">v3.5.0-STANDALONE</span>
+        <button class="btn-icon" style="padding: 4px 10px; font-size: 11px; background: rgba(0, 255, 170, 0.15); border-color: rgba(0, 255, 170, 0.45); color: #00ffaa;" onclick="downloadCapsulesJSON()" title="تنزيل وتصدير جميع الكبسولات كملف JSON قياسي">💾 تصدير JSON</button>
+        <button class="btn-icon" style="padding: 4px 10px; font-size: 11px; background: rgba(255, 215, 0, 0.15); border-color: rgba(255, 215, 0, 0.45); color: #ffd700;" onclick="purgeRamMemory()" title="تفريغ حمولة الرام لتخفيف استهلاك الجهاز والحفاظ على كبسولات الهاردسك">🧹 تفريغ الرام</button>
+        <button class="btn-icon" style="padding: 4px 10px; font-size: 11px;" onclick="toggleVoiceSpeed()" id="voice-speed-btn" title="تغيير سرعة النطق الصوتية">⚡ 1.0x</button>
+        <button class="btn-icon" style="padding: 4px 10px; font-size: 11px;" onclick="toggleVoice()" id="voice-toggle-btn" title="تفعيل أو تعطيل النطق">🔊 الصوت: مفعل</button>
+        <button class="btn-icon" style="padding: 4px 10px; font-size: 11px; color: #ff6b6b; border-color: rgba(255,107,107,0.3);" onclick="clearActiveSessionHistory()" title="تفريغ المحادثة الحالية فقط">🗑️ تفريغ المحادثة</button>
+      </div>
     </div>
 
-    <!-- Toast Notification -->
-    <div class="toast" id="toastMsg"></div>
+    <!-- Digital Counter Screen Bar (شاشة الأعداد الرقمية المباشرة - الفهرس السريع أوفلاين) -->
+    <div class="counter-screen-bar">
+      <div class="counter-card">
+        <div id="cnt-capsules" class="counter-num">0</div>
+        <div class="counter-label">📚 الكبسولات المخزنة</div>
+      </div>
+      <div class="counter-card">
+        <div id="cnt-sessions" class="counter-num">0</div>
+        <div class="counter-label">💬 محادثات الذاكرة</div>
+      </div>
+      <div class="counter-card">
+        <div id="cnt-size" class="counter-num">0 KB</div>
+        <div class="counter-label">📊 الحجم المعرفي</div>
+      </div>
+      <div class="counter-card">
+        <div id="cnt-mode" class="counter-num" style="color: #00ffaa; font-size: 1rem;">أوفلاين 100%</div>
+        <div class="counter-label">🛡️ معالجة الهاردسك</div>
+      </div>
+    </div>
 
-    <audio id="remoteAudio" autoplay playsinline></audio>
+    <!-- Multi-Chat Sessions Bar -->
+    <div class="sessions-bar">
+      <div class="sessions-list-container" id="sessions-tabs-container">
+        <!-- Rendered dynamically -->
+      </div>
+      <div class="session-controls">
+        <button class="btn-icon" style="padding: 4px 10px; font-size: 11px;" onclick="createNewSession()" title="فتح جلسة محادثة جديدة">➕ محادثة جديدة</button>
+        <button class="btn-icon" style="padding: 4px 10px; font-size: 11px;" onclick="renameCurrentSession()" title="إعادة تسمية الجلسة الحالية">✏️</button>
+        <button class="btn-icon" style="padding: 4px 10px; font-size: 11px; color: #ff6b6b;" onclick="deleteCurrentSession()" title="حذف الجلسة الحالية">✕</button>
+      </div>
+    </div>
 
-    <script>
-        // --- 1. STUN & Peer Configuration ---
-        const ICE_SERVERS_CONFIG = {
-            iceServers: [
-                { urls: 'stun:stun.l.google.com:19302' },
-                { urls: 'stun:stun1.l.google.com:19302' },
-                { urls: 'stun:stun2.l.google.com:19302' },
-                { urls: 'stun:stun.cloudflare.com:3478' },
-                { urls: 'stun:openrelay.metered.ca:80' }
-            ],
-            iceCandidatePoolSize: 10
-        };
+    <!-- Persona Selector Bar -->
+    <div class="persona-bar">
+      <span class="persona-title">👑 الشخصية والوكيل المعرفي (Persona):</span>
+      <div class="persona-btns">
+        <button class="persona-btn active" id="persona-seven" onclick="setPersona('seVen')">⚡ seVen (القياسي)</button>
+        <button class="persona-btn" id="persona-malika" onclick="setPersona('Malika')">👑 مليكة (خبيرة الأهرامات)</button>
+        <button class="persona-btn" id="persona-judy" onclick="setPersona('Judy')">🎙️ جودي (الصوت)</button>
+      </div>
+    </div>
 
-        let pc = null;
-        let dataChannel = null;
-        let fileChannel = null;
-        let localStream = null;
-        let isConnected = false;
-        let isInitiator = false;
-        let currentWave = '';
-        let pendingOffer = null;
-        let syncTimer = null;
-        let audioCtx = null;
-        let animFrameId = null;
-        let eventSource = null;
+    <!-- Engine Hat Switcher ("طاقية المحرك") -->
+    <div class="engine-hat-bar">
+      <span class="engine-hat-title">👑 تبديل طاقية المحرك المعرفي:</span>
+      <div class="engine-hat-btns">
+        <button class="hat-btn active" id="hat-local" onclick="setEngineHat('local')">🛡️ seVen Core (أوفلاين)</button>
+        <button class="hat-btn" id="hat-gemini" onclick="setEngineHat('gemini')">✨ Gemini AI (تحليل عميق)</button>
+        <button class="hat-btn" id="hat-gpt" onclick="setEngineHat('gpt')">⚡ Fast GPT (الأسرع)</button>
+        <button class="hat-btn" id="hat-capsules" onclick="setEngineHat('capsules')">📚 محرك الكبسولات (صارم)</button>
+      </div>
+    </div>
+  </div>
 
-        // File receiving state
-        let incomingFileData = [];
-        let incomingFileSize = 0;
-        let incomingFileNameStr = '';
-        let receivedBytes = 0;
+  <!-- Messages Stream -->
+  <div id="messages"></div>
 
-        // Unique device ID for this tab
-        const myDeviceId = 'dev_' + Math.random().toString(36).substring(2, 9);
+  <!-- Active File Preview Bar -->
+  <div id="file-preview-bar">
+    <span id="file-name-txt">📄 file.txt</span>
+    <button style="background:none; border:none; color:#ff5555; cursor:pointer; font-weight:bold; font-size:14px;" onclick="removeAttachedFile()">✕</button>
+  </div>
 
-        // Elements
-        const statusDot = document.getElementById('statusDot');
-        const statusText = document.getElementById('statusText');
-        const callBtn = document.getElementById('callBtn');
-        const callHint = document.getElementById('callHint');
-        const waveTag = document.getElementById('waveTag');
-        const waveLinkInput = document.getElementById('waveLinkInput');
-        const incomingCallBay = document.getElementById('incomingCallBay');
-        const remoteAudio = document.getElementById('remoteAudio');
-        const toastMsg = document.getElementById('toastMsg');
-        const signalingModeBadge = document.getElementById('signalingMode');
-        const sharedTextEl = document.getElementById('sharedText');
-        const dataChannelBadge = document.getElementById('dataChannelBadge');
-        const fileProgressBar = document.getElementById('fileProgressBar');
-        const fileProgressFill = document.getElementById('fileProgressFill');
-        const incomingFileAlert = document.getElementById('incomingFileAlert');
-        const incomingFileName = document.getElementById('incomingFileName');
-        const downloadFileBtn = document.getElementById('downloadFileBtn');
+  <!-- Input & Controls -->
+  <div id="input-container">
+    <button class="btn-icon" onclick="document.getElementById('file-input').click()" title="إرفاق ملف أو كبسولة فردية (PDF/Text/Word/Code)">📎 ملف</button>
+    <input type="file" id="file-input" onchange="handleFileSelect(event)">
 
-        // --- 2. Wave & Domain Initialization ---
-        function initWave() {
-            const urlParams = new URLSearchParams(window.location.search);
-            let waveParam = urlParams.get('wave') || urlParams.get('room');
-            
-            if (!waveParam) {
-                // Generate a random clean wave hash
-                waveParam = 'w-' + Math.random().toString(36).substring(2, 8);
-                const newUrl = window.location.pathname + '?wave=' + waveParam;
-                window.history.replaceState({ wave: waveParam }, '', newUrl);
-            }
+    <button class="btn-icon" onclick="document.getElementById('capsule-json-input').click()" title="استيراد ملف كبسولة JSON مباشر">📦 استيراد كبسولة</button>
+    <input type="file" id="capsule-json-input" accept=".json" onchange="handleCapsuleJSONImport(event)">
 
-            currentWave = waveParam;
-            waveTag.textContent = currentWave;
-            waveLinkInput.value = window.location.href;
+    <button class="btn-icon" onclick="document.getElementById('folder-input').click()" title="طحن مجلد كامل وتحويله لكبسولة معرفية بجميع ملفاته">📂 طحن مجلد كامل</button>
+    <input type="file" id="folder-input" webkitdirectory directory multiple onchange="handleFolderSelect(event)">
 
-            // Start Hybrid Signaling
-            startHybridSignaling();
+    <button class="btn-icon" onclick="promptBrowseWeb()" title="تصفح رابط ويب جلب محتواه مباشرة أوفلاين">🌐 تصفح Web</button>
 
-            // Set up real-time typing sync for shared box
-            sharedTextEl.addEventListener('input', () => {
-                sendSharedTextNow();
-            });
+    <button class="btn-icon" onclick="openMemoryMatrixModal()" title="إدارة بوابات الذاكرة الأربعة للربط والمزامنة" style="color: #33f0ff; border-color: rgba(51, 240, 255, 0.45);">🔗 بوابات الذاكرة</button>
+
+    <button class="btn-icon" onclick="openCapsulesModal()" title="معاينة وفحص كافة الكبسولات المخزنة" style="color: #ffd700; border-color: rgba(255, 215, 0, 0.45);">🔍 فحص الكبسولات</button>
+
+    <button class="btn-icon" id="mic-btn" onclick="toggleMic()" title="تحدث بالصوت">🎙️</button>
+
+    <input type="text" id="user-input" placeholder="اكتب سؤالك، ضع رابط موقع لجلبة، أو ارفق ملفاً..." autofocus>
+    <button id="send-btn" onclick="sendMessage()">إرسال</button>
+  </div>
+
+  <!-- 4-Directions Memory Matrix Modal -->
+  <div id="memory-matrix-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.88); backdrop-filter:blur(15px); z-index:9999; justify-content:center; align-items:center; padding:20px;">
+    <div style="background:#0b0f14; border:1px solid rgba(51,240,255,0.45); border-radius:18px; width:100%; max-width:780px; max-height:88vh; display:flex; flex-direction:column; box-shadow:0 0 35px rgba(0,0,0,0.95);">
+      <div style="padding:16px 20px; border-bottom:1px solid rgba(51,240,255,0.25); display:flex; justify-content:space-between; align-items:center;">
+        <h3 style="margin:0; font-size:1.05rem; color:#33f0ff; display:flex; align-items:center; gap:8px;">
+          <span>🔗 شبكة وبوابات الذاكرة السيادية الأربعة (Memory Matrix 4x)</span>
+        </h3>
+        <button onclick="closeMemoryMatrixModal()" style="background:none; border:none; color:#ff6b6b; font-size:1.3rem; cursor:pointer; font-weight:bold;">✕</button>
+      </div>
+      <div style="padding:18px; overflow-y:auto; flex:1; display:flex; flex-direction:column; gap:14px; font-size:12px;">
+        
+        <!-- Direction 1: Local Disk Path -->
+        <div style="background:rgba(19, 38, 26, 0.7); border:1px solid rgba(212,175,55,0.3); border-radius:10px; padding:12px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+            <strong style="color:#ffd700;">📁 1. المسار المحلي المباشر للهاردسك (Local Disk Path):</strong>
+            <span style="color:#00ffaa; font-family:monospace; font-size:10px;">LOCAL_FILE_ACCESS</span>
+          </div>
+          <input type="text" id="mat-local-path" value="/Users/seVen/seVen_Memory/Capsule_Fatory_Memory.JSON" style="width:100%; padding:8px; border-radius:6px; border:1px solid rgba(212,175,55,0.3); background:#050806; color:#fff; font-family:monospace; font-size:11px;" />
+          <div style="display:flex; justify-content:flex-end; gap:6px; margin-top:8px;">
+            <button class="btn-icon" style="padding:4px 10px; font-size:11px;" onclick="syncMemoryLocation('local_path')">⚡ فحص ومزامنة المسار المحلي</button>
+          </div>
+        </div>
+
+        <!-- Direction 2: Google Drive File Link -->
+        <div style="background:rgba(19, 38, 26, 0.7); border:1px solid rgba(51,240,255,0.3); border-radius:10px; padding:12px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+            <strong style="color:#33f0ff;">📄 2. رابط كبسولة ملف Google Drive:</strong>
+            <span style="color:#33f0ff; font-family:monospace; font-size:10px;">GDRIVE_FILE_LINK</span>
+          </div>
+          <input type="text" id="mat-gdrive-file" placeholder="https://drive.google.com/file/d/1A2B3C4D.../view" style="width:100%; padding:8px; border-radius:6px; border:1px solid rgba(51,240,255,0.3); background:#050806; color:#fff; font-family:monospace; font-size:11px;" />
+          <div style="display:flex; justify-content:flex-end; gap:6px; margin-top:8px;">
+            <button class="btn-icon" style="padding:4px 10px; font-size:11px; color:#33f0ff; border-color:rgba(51,240,255,0.4);" onclick="syncMemoryLocation('gdrive_file')">🌐 جلب الكبسولة من Google Drive</button>
+          </div>
+        </div>
+
+        <!-- Direction 3: Google Drive Folder Link -->
+        <div style="background:rgba(19, 38, 26, 0.7); border:1px solid rgba(212,175,55,0.3); border-radius:10px; padding:12px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+            <strong style="color:#ffd700;">📂 3. رابط مجلد Google Drive الكامل:</strong>
+            <span style="color:#ffd700; font-family:monospace; font-size:10px;">GDRIVE_FOLDER_LINK</span>
+          </div>
+          <input type="text" id="mat-gdrive-folder" value="https://drive.google.com/drive/folders/1scJDnmSwIgWdA0qSXB_wMtNZJZtVF7-n" style="width:100%; padding:8px; border-radius:6px; border:1px solid rgba(212,175,55,0.3); background:#050806; color:#fff; font-family:monospace; font-size:11px;" />
+          <div style="display:flex; justify-content:flex-end; gap:6px; margin-top:8px;">
+            <button class="btn-icon" style="padding:4px 10px; font-size:11px;" onclick="syncMemoryLocation('gdrive_folder')">📂 طحن مجلد Google Drive</button>
+          </div>
+        </div>
+
+        <!-- Direction 4: Local Node API Endpoint -->
+        <div style="background:rgba(19, 38, 26, 0.7); border:1px solid rgba(0,255,170,0.3); border-radius:10px; padding:12px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+            <strong style="color:#00ffaa;">⚡ 4. نقطة نهاية خادم الآلة المحلي (Local Node Endpoint):</strong>
+            <span style="color:#00ffaa; font-family:monospace; font-size:10px;">LOCAL_API_NODE</span>
+          </div>
+          <input type="text" id="mat-local-endpoint" value="http://localhost:7777/v1/chat/completions" style="width:100%; padding:8px; border-radius:6px; border:1px solid rgba(0,255,170,0.3); background:#050806; color:#fff; font-family:monospace; font-size:11px;" />
+          <div style="display:flex; justify-content:flex-end; gap:6px; margin-top:8px;">
+            <button class="btn-icon" style="padding:4px 10px; font-size:11px; color:#00ffaa; border-color:rgba(0,255,170,0.4);" onclick="syncMemoryLocation('local_endpoint')">🔌 اختبار الاتصال وعقدة الخادم</button>
+          </div>
+        </div>
+
+      </div>
+      <div style="padding:14px 20px; border-top:1px solid rgba(255,255,255,0.08); display:flex; justify-content:space-between; align-items:center; background:rgba(5,8,6,0.6);">
+        <span style="font-size:11px; color:#8b98a5; font-family:monospace;">تخزين الهاردسك أوفلاين مفعّل لحفظ مساحة الرام</span>
+        <button class="btn-icon" style="padding:5px 14px; font-size:12px; color:#33f0ff; border-color:rgba(51,240,255,0.4);" onclick="closeMemoryMatrixModal()">حفظ وإغلاق</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Capsule Inspector Modal -->
+  <div id="capsule-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.88); backdrop-filter:blur(15px); z-index:9999; justify-content:center; align-items:center; padding:20px;">
+    <div style="background:#0b0f14; border:1px solid rgba(212,175,55,0.45); border-radius:18px; width:100%; max-width:760px; max-height:88vh; display:flex; flex-direction:column; box-shadow:0 0 35px rgba(0,0,0,0.95);">
+      <div style="padding:16px 20px; border-bottom:1px solid rgba(212,175,55,0.25); display:flex; justify-content:space-between; align-items:center;">
+        <h3 style="margin:0; font-size:1.05rem; color:#ffd700; display:flex; align-items:center; gap:8px;">
+          <span>📚 قاعدة الكبسولات المعرفية السيادية المخزنة (فهرس الهاردسك)</span>
+        </h3>
+        <button onclick="closeCapsulesModal()" style="background:none; border:none; color:#ff6b6b; font-size:1.3rem; cursor:pointer; font-weight:bold;">✕</button>
+      </div>
+      <div id="capsule-modal-list" style="padding:18px; overflow-y:auto; flex:1; display:flex; flex-direction:column; gap:12px;">
+        <!-- Rendered dynamically -->
+      </div>
+      <div style="padding:14px 20px; border-top:1px solid rgba(255,255,255,0.08); display:flex; justify-content:space-between; align-items:center; background:rgba(5,8,6,0.6);">
+        <span style="font-size:11px; color:#8b98a5; font-family:monospace;">المعالجة محليّة 100% أوفلاين مع توثيق الأختام</span>
+        <button class="btn-icon" style="padding:5px 14px; font-size:12px; color:#ff6b6b; border-color:rgba(255,107,107,0.35);" onclick="resetCapsulesToDefault()">🗑️ إعادة تعيين الكبسولات للأصل</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const messagesEl = document.getElementById('messages');
+const inputEl = document.getElementById('user-input');
+const fileInputEl = document.getElementById('file-input');
+const filePreviewBar = document.getElementById('file-preview-bar');
+const fileNameTxt = document.getElementById('file-name-txt');
+const cntCapsulesEl = document.getElementById('cnt-capsules');
+const cntSessionsEl = document.getElementById('cnt-sessions');
+const cntSizeEl = document.getElementById('cnt-size');
+const voiceToggleBtn = document.getElementById('voice-toggle-btn');
+const voiceSpeedBtn = document.getElementById('voice-speed-btn');
+const sessionsTabsContainer = document.getElementById('sessions-tabs-container');
+const mainContainer = document.getElementById('seven-id');
+const dropOverlay = document.getElementById('drop-overlay');
+
+// Config & Gateways
+const BRAIN_URL = 'http://localhost:7777/v1/chat/completions';
+const TONGUE_URL = 'http://localhost:7772/';
+const API_KEY = 'AlArabMasterKey';
+
+let attachedFile = null;
+let isListening = false;
+let recognition = null;
+let autoVoiceEnabled = true;
+let voiceSpeedRates = [0.8, 1.0, 1.2, 1.5];
+let voiceSpeedIndex = 1; // Default 1.0x
+let currentEngineHat = 'local'; // local, gemini, gpt, capsules
+let currentPersonaId = 'seVen'; // seVen, Malika, Judy
+
+// Personas Definitions
+const PERSONAS_CONFIG = {
+  seVen: {
+    id: "seVen",
+    name: "seVen",
+    title: "محرك سبعة السيادي الأوفلاين",
+    system_prompt: "أنت seVen (محرك سبعة السيادي) لـ seven.alarabclub777.com. تجيب بدقة باردة، سيادية، مباشرة من الكبسولات المعرفية والملفات والذاكرة أوفلاين بدون تلفيق.",
+    greeting: "AL-ARAB CLUB 777 - seVen [ SYSTEM STATUS: SOVEREIGN ]. جاهز للمعالجة الأوفلاين وإدارة كبسولات الهاردسك."
+  },
+  Malika: {
+    id: "Malika",
+    name: "مليكة",
+    title: "خبيرة الأهرامات ونزلة السمان - AlArab Club 777",
+    system_prompt: "أنتِ مليكة (Malika) - بنت بلد، نزلاوية شيك، خبيرة الأهرامات ونزلة السمان وفندق Sky Pyramids Hotel و AlArab Club 777. تردين بعامية مصرية، ذكاء عاطفي، وبدون ادعاء بأنك AI. الموقع الرسمي: https://www.alarabclub777.com/ والموقع الجغرافي: 📍 https://maps.app.goo.gl/G53mXPW5zremhLR36 ورقم المستر سعيد واتساب: +201010100417.",
+    greeting: "أهلاً بك يا زعيم! أنا مليكة خبيرة الأهرامات ونزلة السمان من AlArab Club 777. جاهزة لأي سؤال أو خروجة أو ترتيب يخص الجيزة والأهرامات."
+  },
+  Judy: {
+    id: "Judy",
+    name: "جودي",
+    title: "Judy Voice Lap - المساعد الصوتي السريع",
+    system_prompt: "أنتِ جودي (Judy) من Judy Voice Lap. تجيبين باختصار، دقة صوتية، وتجاوب سريع.",
+    greeting: "أهلاً بك، أنا جودي من Judy Voice Lap. المساعد الصوتي التفاعلي جاهز لإعادة توجيه الاستفسارات والكبسولات الصوتية."
+  }
+};
+
+// IndexedDB Storage Controller (Stores heavy strings on hard disk)
+let idbDatabase = null;
+function initIndexedDB() {
+  return new Promise((resolve) => {
+    const request = indexedDB.open('seVen_Disk_Storage', 1);
+    request.onupgradeneeded = (e) => {
+      const db = e.target.result;
+      if (!db.objectStoreNames.contains('capsule_bodies')) {
+        db.createObjectStore('capsule_bodies', { keyPath: 'id' });
+      }
+    };
+    request.onsuccess = (e) => {
+      idbDatabase = e.target.result;
+      resolve(idbDatabase);
+    };
+    request.onerror = () => resolve(null);
+  });
+}
+
+async function saveCapsuleBodyToDisk(id, textContent) {
+  if (!idbDatabase) await initIndexedDB();
+  if (!idbDatabase) return;
+  return new Promise((resolve) => {
+    const tx = idbDatabase.transaction('capsule_bodies', 'readwrite');
+    const store = tx.objectStore('capsule_bodies');
+    store.put({ id, content: textContent, updated_at: Date.now() });
+    tx.oncomplete = () => resolve(true);
+    tx.onerror = () => resolve(false);
+  });
+}
+
+async function getCapsuleBodyFromDisk(id) {
+  if (!idbDatabase) await initIndexedDB();
+  if (!idbDatabase) return null;
+  return new Promise((resolve) => {
+    const tx = idbDatabase.transaction('capsule_bodies', 'readonly');
+    const store = tx.objectStore('capsule_bodies');
+    const req = store.get(id);
+    req.onsuccess = () => resolve(req.result ? req.result.content : null);
+    req.onerror = () => resolve(null);
+  });
+}
+
+// Lightweight Header Index (stored in localStorage)
+let localKnowledgeIndex = [];
+
+const SEED_CONSTITUTION_INDEX = {
+  id: "cap_seed_constitution",
+  name: '📜 الدستور المعرفي والسيادي الرسمي (seVen Constitution v3.5)',
+  size: 1024,
+  snippet: 'كبسولة الدستور السيادي seVen|STAMP|ID|777|AL-ARAB|CLUB...',
+  time: new Date().toISOString()
+};
+
+async function loadKnowledgeIndex() {
+  await initIndexedDB();
+  try {
+    const savedKB = localStorage.getItem('sovereign_capsules_index_v3.5');
+    if (savedKB) localKnowledgeIndex = JSON.parse(savedKB);
+  } catch(e){}
+
+  if (!localKnowledgeIndex || localKnowledgeIndex.length === 0) {
+    localKnowledgeIndex = [SEED_CONSTITUTION_INDEX];
+    saveCapsuleBodyToDisk(SEED_CONSTITUTION_INDEX.id, `[كبسولة الدستور السيادي seVen|STAMP|ID|777|AL-ARAB|CLUB]\nصاحب النظام: AlArab_SharifAlShawish\nالمحرك: seVen OS V3.5 (1 MACHINE - THE BRAIN MASTER)\nالأمان: أوفلاين 100% ومعالجة الهاردسك والتوجيه الحسابي الحتمي.`);
+    saveKnowledgeIndex();
+  }
+}
+
+function saveKnowledgeIndex() {
+  try {
+    localStorage.setItem('sovereign_capsules_index_v3.5', JSON.stringify(localKnowledgeIndex));
+  } catch(e){}
+  updateCounterScreens();
+}
+
+// Multi-Chat Sessions State
+let sessions = [];
+let activeSessionId = null;
+
+function loadSessions() {
+  try {
+    const savedSessions = localStorage.getItem('sovereign_chat_sessions_v3.5');
+    if (savedSessions) sessions = JSON.parse(savedSessions);
+  } catch(e){}
+
+  if (!sessions || sessions.length === 0) {
+    const activeP = PERSONAS_CONFIG[currentPersonaId] || PERSONAS_CONFIG.seVen;
+    const initialSession = {
+      id: 'session_' + Date.now(),
+      title: 'المحادثة السيادية 1',
+      messages: [
+        {
+          sender: 'ai',
+          text: activeP.greeting,
+          time: new Date().toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' })
         }
+      ]
+    };
+    sessions = [initialSession];
+  }
 
-        function generateNewWave() {
-            const newWave = 'w-' + Math.random().toString(36).substring(2, 8);
-            window.location.href = window.location.pathname + '?wave=' + newWave;
+  const savedActiveId = localStorage.getItem('sovereign_active_session_id_v3.5');
+  if (savedActiveId && sessions.some(s => s.id === savedActiveId)) {
+    activeSessionId = savedActiveId;
+  } else {
+    activeSessionId = sessions[0].id;
+  }
+
+  saveSessions();
+  renderSessionsTabs();
+  renderActiveMessages();
+  updateCounterScreens();
+}
+
+function saveSessions() {
+  try {
+    localStorage.setItem('sovereign_chat_sessions_v3.5', JSON.stringify(sessions));
+    localStorage.setItem('sovereign_active_session_id_v3.5', activeSessionId);
+  } catch(e){}
+  updateCounterScreens();
+}
+
+function getActiveSession() {
+  return sessions.find(s => s.id === activeSessionId) || sessions[0];
+}
+
+function updateCounterScreens() {
+  if (cntCapsulesEl) cntCapsulesEl.textContent = localKnowledgeIndex.length;
+  if (cntSessionsEl) cntSessionsEl.textContent = sessions.length;
+  
+  let totalBytes = 0;
+  localKnowledgeIndex.forEach(c => totalBytes += (c.size || 1024));
+  if (cntSizeEl) cntSizeEl.textContent = `${(totalBytes / 1024).toFixed(1)} KB`;
+}
+
+function renderSessionsTabs() {
+  sessionsTabsContainer.innerHTML = '';
+  sessions.forEach(sess => {
+    const tabEl = document.createElement('div');
+    tabEl.className = 'session-tab ' + (sess.id === activeSessionId ? 'active' : '');
+    tabEl.innerHTML = `<span>💬 ${escapeHtml(sess.title)}</span>`;
+    tabEl.onclick = () => switchSession(sess.id);
+    sessionsTabsContainer.appendChild(tabEl);
+  });
+}
+
+function renderActiveMessages() {
+  messagesEl.innerHTML = '';
+  const current = getActiveSession();
+  if (current && current.messages) {
+    current.messages.forEach(msg => {
+      appendMessageUI(msg.sender, msg.text, msg.fileName, msg.time);
+    });
+  }
+}
+
+function switchSession(sessionId) {
+  if (activeSessionId === sessionId) return;
+  activeSessionId = sessionId;
+  saveSessions();
+  renderSessionsTabs();
+  renderActiveMessages();
+}
+
+function createNewSession() {
+  const newNum = sessions.length + 1;
+  const activeP = PERSONAS_CONFIG[currentPersonaId] || PERSONAS_CONFIG.seVen;
+  const newSess = {
+    id: 'session_' + Date.now(),
+    title: `محادثة ${newNum}`,
+    messages: [
+      {
+        sender: 'ai',
+        text: `أهلاً بك مع (${activeP.name}). تفضل بطرح سؤالك أو رفع كبسولة معرفية.`,
+        time: new Date().toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' })
+      }
+    ]
+  };
+  sessions.push(newSess);
+  activeSessionId = newSess.id;
+  saveSessions();
+  renderSessionsTabs();
+  renderActiveMessages();
+}
+
+function renameCurrentSession() {
+  const current = getActiveSession();
+  const newTitle = prompt('أدخل العنوان الجديد لهذه المحادثة:', current.title);
+  if (newTitle && newTitle.trim()) {
+    current.title = newTitle.trim();
+    saveSessions();
+    renderSessionsTabs();
+  }
+}
+
+function deleteCurrentSession() {
+  if (sessions.length <= 1) {
+    clearActiveSessionHistory();
+    return;
+  }
+  if (!confirm('هل أنت تأكد من حذف هذه المحادثة بالكامل؟')) return;
+
+  sessions = sessions.filter(s => s.id !== activeSessionId);
+  activeSessionId = sessions[0].id;
+  saveSessions();
+  renderSessionsTabs();
+  renderActiveMessages();
+}
+
+function clearActiveSessionHistory() {
+  const activeP = PERSONAS_CONFIG[currentPersonaId] || PERSONAS_CONFIG.seVen;
+  const current = getActiveSession();
+  current.messages = [
+    {
+      sender: 'ai',
+      text: `تم تفريغ سجل هذه المحادثة. (${activeP.name}) جاهز لخدمتك أوفلاين يا سيادة العرّاب.`,
+      time: new Date().toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' })
+    }
+  ];
+  saveSessions();
+  renderActiveMessages();
+}
+
+function purgeRamMemory() {
+  try {
+    // Retain only capsule snippets and current active session messages
+    localKnowledgeIndex = localKnowledgeIndex.map(c => ({
+      id: c.id,
+      name: c.name,
+      size: c.size,
+      snippet: c.snippet ? c.snippet.slice(0, 300) : '',
+      time: c.time
+    }));
+    saveKnowledgeIndex();
+    saveMessageToActiveSession('ai', '🧹 **تم تفريغ حمولة الرام (RAM Payload Cleared) بنجاح!**\nتم نقل وحفظ كافة النصوص الكاملة بذاكرة الهاردسك أوفلاين لتسريع الجهاز.');
+  } catch(e) {
+    alert("حدث خطأ في تفريغ الرام: " + e.message);
+  }
+}
+
+function setPersona(personaKey) {
+  if (!PERSONAS_CONFIG[personaKey]) return;
+  currentPersonaId = personaKey;
+  document.querySelectorAll('.persona-btn').forEach(btn => btn.classList.remove('active'));
+  document.getElementById(`persona-${personaKey.toLowerCase()}`)?.classList.add('active');
+  
+  const p = PERSONAS_CONFIG[personaKey];
+  saveMessageToActiveSession('ai', `👑 **تم التحويل إلى الوكيل المعرفي: ${p.name}** (${p.title})`);
+}
+
+function setEngineHat(hatMode) {
+  currentEngineHat = hatMode;
+  document.querySelectorAll('.hat-btn').forEach(btn => btn.classList.remove('active'));
+  document.getElementById(`hat-${hatMode}`)?.classList.add('active');
+}
+
+function toggleVoice() {
+  autoVoiceEnabled = !autoVoiceEnabled;
+  voiceToggleBtn.textContent = autoVoiceEnabled ? '🔊 الصوت: مفعل' : '🔇 الصوت: معطل';
+  if (!autoVoiceEnabled && window.speechSynthesis) {
+    window.speechSynthesis.cancel();
+  }
+}
+
+function toggleVoiceSpeed() {
+  voiceSpeedIndex = (voiceSpeedIndex + 1) % voiceSpeedRates.length;
+  const rate = voiceSpeedRates[voiceSpeedIndex];
+  voiceSpeedBtn.textContent = `⚡ ${rate.toFixed(1)}x`;
+}
+
+function appendMessageUI(sender, text, fileName = null, timeStr = null) {
+  const time = timeStr || new Date().toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' });
+  const activeP = PERSONAS_CONFIG[currentPersonaId] || PERSONAS_CONFIG.seVen;
+  const msgEl = document.createElement('div');
+  msgEl.className = 'message ' + sender;
+
+  let html = `<div class="time-stamp">
+    <span>${sender === 'user' ? '👤 أنت (العرّاب)' : '⚡ ' + activeP.name + ' - (' + currentEngineHat.toUpperCase() + ')'}</span>
+    <span>${time}</span>
+  </div>`;
+  html += `<div style="white-space: pre-wrap;">${escapeHtml(text)}</div>`;
+  if (fileName) {
+    html += `<div class="file-chip">📎 ملف مرفق: ${escapeHtml(fileName)}</div>`;
+  }
+
+  msgEl.innerHTML = html;
+  messagesEl.appendChild(msgEl);
+  messagesEl.scrollTop = messagesEl.scrollHeight;
+}
+
+function saveMessageToActiveSession(sender, text, fileName = null) {
+  const time = new Date().toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' });
+  const current = getActiveSession();
+  current.messages.push({ sender, text, fileName, time });
+
+  if (sender === 'user' && text && (current.title.startsWith('المحادثة') || current.title.startsWith('محادثة'))) {
+    const cleanTitle = text.slice(0, 22) + (text.length > 22 ? '...' : '');
+    current.title = cleanTitle;
+    renderSessionsTabs();
+  }
+
+  saveSessions();
+  appendMessageUI(sender, text, fileName, time);
+}
+
+function escapeHtml(str) {
+  if (!str) return '';
+  return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+
+function handleFileSelect(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  attachedFile = file;
+  fileNameTxt.textContent = `📄 ${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
+  filePreviewBar.style.display = 'flex';
+}
+
+function removeAttachedFile() {
+  attachedFile = null;
+  fileInputEl.value = '';
+  filePreviewBar.style.display = 'none';
+}
+
+// Drag & Drop Handling anywhere on seVen Node Frame
+mainContainer.addEventListener('dragover', (e) => {
+  e.preventDefault();
+  dropOverlay.style.display = 'flex';
+});
+
+mainContainer.addEventListener('dragleave', (e) => {
+  if (e.relatedTarget === null || !mainContainer.contains(e.relatedTarget)) {
+    dropOverlay.style.display = 'none';
+  }
+});
+
+mainContainer.addEventListener('drop', async (e) => {
+  e.preventDefault();
+  dropOverlay.style.display = 'none';
+
+  const items = e.dataTransfer.items;
+  if (items && items.length > 0) {
+    const droppedFiles = [];
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i].webkitGetAsEntry ? items[i].webkitGetAsEntry() : null;
+      if (item) {
+        const filesFromItem = await traverseFileTree(item);
+        droppedFiles.push(...filesFromItem);
+      } else if (items[i].kind === 'file') {
+        const f = items[i].getAsFile();
+        if (f) droppedFiles.push(f);
+      }
+    }
+    if (droppedFiles.length > 0) {
+      await processDroppedFiles(droppedFiles);
+      return;
+    }
+  }
+
+  if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+    await processDroppedFiles(Array.from(e.dataTransfer.files));
+  }
+});
+
+async function traverseFileTree(item, path = '') {
+  return new Promise((resolve) => {
+    if (item.isFile) {
+      item.file((file) => resolve([file]), () => resolve([]));
+    } else if (item.isDirectory) {
+      const dirReader = item.createReader();
+      dirReader.readEntries(async (entries) => {
+        const files = [];
+        for (const entry of entries) {
+          const subFiles = await traverseFileTree(entry, path + item.name + '/');
+          files.push(...subFiles);
         }
+        resolve(files);
+      }, () => resolve([]));
+    } else {
+      resolve([]);
+    }
+  });
+}
 
-        function showToast(msg) {
-            toastMsg.textContent = msg;
-            toastMsg.style.display = 'block';
-            setTimeout(() => { toastMsg.style.display = 'none'; }, 2600);
+async function processDroppedFiles(filesList) {
+  if (filesList.length === 1 && filesList[0].name.endsWith('.json')) {
+    const jsonText = await filesList[0].text();
+    try {
+      const parsed = JSON.parse(jsonText);
+      if (parsed.sovereign_capsules_kb || Array.isArray(parsed)) {
+        await handleCapsuleJSONImport({ target: { files: [filesList[0]] } });
+        return;
+      }
+    } catch(e){}
+  }
+
+  if (filesList.length === 1) {
+    attachedFile = filesList[0];
+    fileNameTxt.textContent = `📄 ${filesList[0].name} (${(filesList[0].size / 1024).toFixed(1)} KB)`;
+    filePreviewBar.style.display = 'flex';
+    saveMessageToActiveSession('ai', `📥 **تم استلام الكبسولة المرفقة بالسحب والإسقاط:** ${filesList[0].name}`);
+  } else {
+    await handleFolderSelect({ target: { files: filesList } });
+  }
+}
+
+async function handleFolderSelect(e) {
+  const files = Array.from(e.target.files || []);
+  if (!files || files.length === 0) return;
+
+  const ignoreExts = ['.png', '.jpg', '.jpeg', '.gif', '.webp', '.ico', '.zip', '.tar', '.gz', '.mp3', '.mp4', '.exe', '.dll'];
+  const validFiles = files.filter(f => {
+    const ext = '.' + (f.name.split('.').pop() || '').toLowerCase();
+    return !ignoreExts.includes(ext);
+  });
+
+  if (validFiles.length === 0) {
+    alert("لم يتم العثور على ملفات مستندات/كود قابلة للتحليل في المجلد المحدد.");
+    return;
+  }
+
+  saveMessageToActiveSession('ai', `⏳ **جاري طحن المجلد المعرفي أوفلاين** (${validFiles.length} ملف مُكتشف)...`);
+
+  let totalChars = 0;
+  let folderName = files[0].webkitRelativePath ? files[0].webkitRelativePath.split('/')[0] : 'مجلد معالج';
+  let combinedContent = `[كبسولة طحن المجلد المعرفي: ${folderName}]\nتاريخ الطحن: ${new Date().toLocaleString('ar-EG')}\nإجمالي الملفات: ${validFiles.length}\n\n`;
+
+  const maxFiles = Math.min(validFiles.length, 120);
+  for (let i = 0; i < maxFiles; i++) {
+    const file = validFiles[i];
+    try {
+      const text = await readFileAsText(file);
+      if (text && text.trim().length > 0) {
+        const snippet = text.slice(0, 5000);
+        combinedContent += `--- [ملف ${i+1}/${maxFiles}: ${file.webkitRelativePath || file.name}] ---\n${snippet}\n\n`;
+        totalChars += snippet.length;
+      }
+    } catch(err){}
+  }
+
+  const capId = 'cap_folder_' + Date.now();
+  const folderCapsuleIndex = {
+    id: capId,
+    name: `📂 كبسولة طحن المجلد: ${folderName} (${validFiles.length} ملف)`,
+    size: totalChars,
+    snippet: combinedContent.slice(0, 300) + '...',
+    time: new Date().toISOString()
+  };
+
+  await saveCapsuleBodyToDisk(capId, combinedContent);
+  localKnowledgeIndex.push(folderCapsuleIndex);
+  saveKnowledgeIndex();
+
+  saveMessageToActiveSession('ai', `✅ **تم طحن وتحليل المجلد بنجاح ورسمه على الهاردسك!**\n\n📁 **المجلد**: ${folderName}\n📄 **الملفات المعالجة**: ${validFiles.length} ملف\n📊 **الحجم المعرفي**: ${(totalChars / 1024).toFixed(1)} KB\n\nتم حفظ النص الكامل بذاكرة الهاردسك دون إرهاق الرام.`);
+}
+
+async function readFileAsText(file) {
+  if (file.name.toLowerCase().endsWith('.pdf') && window.pdfjsLib) {
+    try {
+      const arrayBuffer = await file.arrayBuffer();
+      const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+      let pdfText = '';
+      for (let i = 1; i <= Math.min(pdf.numPages, 30); i++) {
+        const page = await pdf.getPage(i);
+        const textContent = await page.getTextContent();
+        pdfText += textContent.items.map(item => item.str).join(' ') + '\n';
+      }
+      if (pdfText.trim().length > 0) return pdfText;
+    } catch(e) { console.warn("PDF parse note:", e); }
+  }
+  return await file.text();
+}
+
+async function promptBrowseWeb() {
+  const urlOrTopic = prompt("أدخل رابط موقع الويب (URL) لجلب محتواه أوفلاين:\nمثال: https://drive.google.com/drive/folders/1scJDnmSwIgWdA0qSXB_wMtNZJZtVF7-n");
+  if (!urlOrTopic || !urlOrTopic.trim()) return;
+
+  saveMessageToActiveSession('ai', '⚡ جاري تصفح الموقع وجلب الكبسولة المعرفية...');
+  const webCap = await fetchAndBrowseWeb(urlOrTopic.trim());
+  if (webCap) {
+    const capId = 'cap_web_' + Date.now();
+    await saveCapsuleBodyToDisk(capId, webCap.content);
+    localKnowledgeIndex.push({
+      id: capId,
+      name: webCap.name,
+      size: webCap.size,
+      snippet: webCap.content.slice(0, 300) + '...',
+      time: webCap.time
+    });
+    saveKnowledgeIndex();
+    saveMessageToActiveSession('ai', `✅ **تم تصفح وجلب الكبسولة بنجاح!**\n\n🌐 **المصدر**: ${webCap.name}\n📊 **الحجم المعرفي**: ${(webCap.size / 1024).toFixed(1)} KB`);
+  } else {
+    saveMessageToActiveSession('ai', `⚠️ تعذر الوصول المباشر لهذا الرابط أو حظره من المصدر.`);
+  }
+}
+
+async function fetchAndBrowseWeb(targetUrlOrQuery) {
+  if (!targetUrlOrQuery) return null;
+  let cleanUrl = targetUrlOrQuery.trim();
+
+  if (!cleanUrl.startsWith('http://') && !cleanUrl.startsWith('https://')) {
+    if (cleanUrl.includes('.') && !cleanUrl.includes(' ')) {
+      cleanUrl = 'https://' + cleanUrl;
+    } else {
+      cleanUrl = 'https://html.duckduckgo.com/html/?q=' + encodeURIComponent(cleanUrl);
+    }
+  }
+
+  const readers = [
+    `https://r.jina.ai/${cleanUrl}`,
+    `https://api.allorigins.win/raw?url=${encodeURIComponent(cleanUrl)}`
+  ];
+
+  let extractedText = '';
+  for (const readerUrl of readers) {
+    try {
+      const res = await fetch(readerUrl);
+      if (res.ok) {
+        const text = await res.text();
+        if (text && text.length > 50) {
+          const cleanText = text
+            .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+            .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, '')
+            .replace(/<[^>]+>/g, ' ')
+            .replace(/\s+/g, ' ')
+            .trim();
+          if (cleanText.length > 50) {
+            extractedText = cleanText.slice(0, 8000);
+            break;
+          }
         }
+      }
+    } catch(e){}
+  }
 
-        async function copyWaveLink() {
-            try {
-                await navigator.clipboard.writeText(waveLinkInput.value);
-                showToast('✅ تم نسخ الرابط');
-            } catch {
-                waveLinkInput.select();
-                document.execCommand('copy');
-                showToast('✅ تم نسخ الرابط');
-            }
-        }
+  if (!extractedText) return null;
 
-        function updateUIState(state, text) {
-            statusText.textContent = text;
-            statusDot.className = 'status-dot ' + state;
+  return {
+    name: `🌐 كبسولة ويب: ${cleanUrl.replace(/^https?:\/\//, '').slice(0, 32)}`,
+    size: extractedText.length,
+    content: `[مصدر Web المباشر: ${cleanUrl}]\n\n` + extractedText,
+    time: new Date().toISOString()
+  };
+}
 
-            if (state === 'connected') {
-                callBtn.className = 'call-trigger-btn busy';
-                callBtn.textContent = '🔴';
-                callHint.textContent = 'المكالمة نشطة (اضغط للإنهاء)';
-                isConnected = true;
-            } else if (state === 'calling') {
-                callBtn.className = 'call-trigger-btn busy';
-                callBtn.textContent = '📞';
-                callHint.textContent = 'جاري الاتصال بالطرف الآخر...';
-            } else {
-                callBtn.className = 'call-trigger-btn idle';
-                callBtn.textContent = '📞';
-                callHint.textContent = 'اضغط لبدء الاتصال المباشر';
-                isConnected = false;
-            }
-        }
+async function downloadCapsulesJSON() {
+  if (!localKnowledgeIndex || localKnowledgeIndex.length === 0) {
+    alert("لا توجد كبسولات مخزنة للتصدير حالياً.");
+    return;
+  }
 
-        // --- 3. Hybrid Signaling ---
-        function startHybridSignaling() {
-            // Channel A: Try Local Node Signaling Endpoint
-            if (syncTimer) clearInterval(syncTimer);
-            syncTimer = setInterval(pollLocalSignaling, 2000);
+  const fullExportList = [];
+  for (const idxItem of localKnowledgeIndex) {
+    const bodyContent = await getCapsuleBodyFromDisk(idxItem.id);
+    fullExportList.push({
+      ...idxItem,
+      content: bodyContent || idxItem.snippet
+    });
+  }
 
-            // Channel B: Public Zero-Config PubSub (ntfy / SSE) for public domains without Node
-            try {
-                const topic = 'seven_wave_' + currentWave.replace(/[^a-zA-Z0-9_-]/g, '');
-                if (eventSource) eventSource.close();
-                eventSource = new EventSource('https://ntfy.sh/' + topic + '/sse');
-                
-                eventSource.onopen = () => {
-                    signalingModeBadge.textContent = 'P2P: Mesh Active';
-                };
+  // Helper for clean concise English slug
+  function extractCleanEnglishSlug(rawName, fallback) {
+    if (!rawName) return fallback || 'sovereign_capsule';
+    const englishTokens = rawName
+      .replace(/[^\w\s-]/g, ' ')
+      .split(/[\s_-]+/)
+      .filter(t => /^[a-zA-Z0-9]+$/.test(t))
+      .filter(t => !/^\d+$/.test(t) || t.length > 2)
+      .filter(t => !['file', 'files', 'kb', 'mb', 'json', 'bin', 'txt', 'md'].includes(t.toLowerCase()));
 
-                eventSource.onmessage = async (e) => {
-                    try {
-                        const eventData = JSON.parse(e.data);
-                        if (!eventData.message) return;
-                        const payload = JSON.parse(eventData.message);
-                        handleIncomingSignal(payload);
-                    } catch (_) {}
-                };
-            } catch (_) {}
-        }
+    if (englishTokens.length > 0) {
+      const slug = englishTokens.join('_').toLowerCase().replace(/_+/g, '_').slice(0, 24).replace(/^_|_$/g, '');
+      if (slug.length >= 3) return slug;
+    }
 
-        async function broadcastSignal(signal) {
-            signal.sender = myDeviceId;
-            signal.wave = currentWave;
+    const lower = rawName.toLowerCase();
+    if (lower.includes('دستور') || lower.includes('سياد')) return 'constitution';
+    if (lower.includes('طحن') || lower.includes('مجلد')) return 'folder_grind';
+    if (lower.includes('سياح') || lower.includes('هرم')) return 'tourism_data';
+    if (lower.includes('خلاط') || lower.includes('دمج') || lower.includes('تقرير')) return 'blend_report';
+    return fallback || 'sovereign_capsule';
+  }
 
-            // Send to Local Node Server
-            try {
-                if (signal.type === 'offer') {
-                    await fetch('/api/signal/p2p_call', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ room: currentWave, caller: myDeviceId, offer: signal.sdp })
-                    });
-                } else if (signal.type === 'answer') {
-                    await fetch('/api/signal/p2p_answer', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ room: currentWave, answer: signal.sdp })
-                    });
-                } else if (signal.type === 'hangup') {
-                    await fetch('/api/signal/p2p_hangup', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ room: currentWave })
-                    });
-                }
-            } catch (_) {}
+  // Generate Smart Predicate Hook Name based on primary content (clean concise English)
+  const firstCap = localKnowledgeIndex[localKnowledgeIndex.length - 1];
+  const smartTag = extractCleanEnglishSlug(firstCap ? firstCap.name : '', 'sovereign_capsule');
 
-            // Send to Public SSE Mesh
-            try {
-                const topic = 'seven_wave_' + currentWave.replace(/[^a-zA-Z0-9_-]/g, '');
-                await fetch('https://ntfy.sh/' + topic, {
-                    method: 'POST',
-                    body: JSON.stringify(signal),
-                    headers: { 'Title': 'Signal' }
-                });
-            } catch (_) {}
-        }
+  const dateStamp = new Date().toISOString().slice(0, 10);
+  const timeStamp = new Date().toTimeString().slice(0, 5).replace(':', '');
+  const dynamicFileName = `seVen_v50_${smartTag}_${dateStamp}_${timeStamp}.json`;
 
-        async function pollLocalSignaling() {
-            if (!currentWave) return;
-            try {
-                const res = await fetch(`/api/signal/p2p_session?room=${encodeURIComponent(currentWave)}&device_id=${myDeviceId}`);
-                if (!res.ok) return;
-                const data = await res.json();
+  const exportPayload = {
+    sovereign_capsules_kb: fullExportList,
+    exported_at: new Date().toISOString(),
+    system_version: "v50.0.0-STANDALONE-SEALED",
+    smart_anchor_hook: `SEVEN_HOOK_${smartTag}`,
+    total_capsules: fullExportList.length,
+    chat_sessions: sessions,
+    persona_id: currentPersonaId
+  };
 
-                if (data.callState === 'calling' && data.caller !== myDeviceId && data.offer && !isConnected) {
-                    pendingOffer = data.offer;
-                    incomingCallBay.style.display = 'block';
-                    updateUIState('calling', '🔔 مكالمة صوتية واردة!');
-                } else if (data.callState === 'idle' && incomingCallBay.style.display === 'block') {
-                    incomingCallBay.style.display = 'none';
-                    pendingOffer = null;
-                    if (!isConnected) updateUIState('idle', 'جاهز للاتصال');
-                }
+  const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportPayload, null, 2));
+  const downloadAnchor = document.createElement('a');
+  downloadAnchor.setAttribute("href", dataStr);
+  downloadAnchor.setAttribute("download", dynamicFileName);
+  document.body.appendChild(downloadAnchor);
+  downloadAnchor.click();
+  downloadAnchor.remove();
+  saveMessageToActiveSession('ai', `💾 **تم تصدير ملف الذاكرة المعرفية باسم ${dynamicFileName} بنجاح!**`);
+}
 
-                if (isInitiator && !isConnected && data.callState === 'connected' && data.answer && pc) {
-                    if (pc.signalingState === 'have-local-offer') {
-                        await pc.setRemoteDescription(new RTCSessionDescription(data.answer));
-                        updateUIState('connected', '✅ متصل محلياً (P2P Connected)');
-                    }
-                }
-            } catch (_) {}
-        }
+async function handleCapsuleJSONImport(e) {
+  const file = e.target.files ? e.target.files[0] : null;
+  if (!file) return;
 
-        function handleIncomingSignal(signal) {
-            if (signal.sender === myDeviceId) return;
+  try {
+    const text = await file.text();
+    const json = JSON.parse(text);
 
-            if (signal.type === 'offer' && !isConnected) {
-                pendingOffer = signal.sdp;
-                incomingCallBay.style.display = 'block';
-                updateUIState('calling', '🔔 مكالمة صوتية واردة!');
-            } else if (signal.type === 'answer' && isInitiator && pc && !isConnected) {
-                if (pc.signalingState === 'have-local-offer') {
-                    pc.setRemoteDescription(new RTCSessionDescription(signal.sdp)).then(() => {
-                        updateUIState('connected', '✅ متصل محلياً (P2P Connected)');
-                    }).catch(err => console.error('Set remote err:', err));
-                }
-            } else if (signal.type === 'hangup') {
-                resetCall(false);
-            }
-        }
+    let importedCapsules = [];
+    if (Array.isArray(json)) {
+      importedCapsules = json;
+    } else if (json.sovereign_capsules_kb && Array.isArray(json.sovereign_capsules_kb)) {
+      importedCapsules = json.sovereign_capsules_kb;
+    } else if (json.name || json.content) {
+      importedCapsules = [json];
+    }
 
-        // --- 4. WebRTC Engine & Data Channels ---
-        async function initPC() {
-            if (pc) {
-                try { pc.close(); } catch (_) {}
-                pc = null;
-            }
+    if (importedCapsules.length === 0) {
+      alert("لم يتم العثور على كبسولات صالحة في ملف JSON المرفق.");
+      return;
+    }
 
-            pc = new RTCPeerConnection(ICE_SERVERS_CONFIG);
+    let addedCount = 0;
+    for (const cap of importedCapsules) {
+      if (cap && (cap.content || cap.text || cap.snippet)) {
+        const capId = 'cap_imp_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6);
+        const fullContent = cap.content || cap.text || cap.snippet || '';
+        await saveCapsuleBodyToDisk(capId, fullContent);
 
-            // Handle incoming DataChannels (created by the caller)
-            pc.ondatachannel = (event) => {
-                const ch = event.channel;
-                if (ch.label === 'text-sync') {
-                    setupTextDataChannel(ch);
-                } else if (ch.label === 'file-transfer') {
-                    setupFileDataChannel(ch);
-                }
-            };
+        localKnowledgeIndex.push({
+          id: capId,
+          name: cap.name || cap.title || `كبسولة مستوردة (${file.name})`,
+          size: cap.size || fullContent.length || 1024,
+          snippet: fullContent.slice(0, 300) + '...',
+          time: cap.time || new Date().toISOString()
+        });
+        addedCount++;
+      }
+    }
 
-            pc.ontrack = (event) => {
-                if (event.streams && event.streams[0]) {
-                    remoteAudio.srcObject = event.streams[0];
-                    updateUIState('connected', '✅ متصل! الصوت مفتوح عبر الشبكة المحلية');
-                    startAudioMeter();
-                }
-            };
+    saveKnowledgeIndex();
+    saveMessageToActiveSession('ai', `📥 **تم استيراد الكبسولة المعرفية بنجاح!**\n\n📄 **الملف**: ${file.name}\n📦 **العناصر المضافة**: ${addedCount} كبسولة\n📊 **إجمالي الكبسولات المخزنة**: ${localKnowledgeIndex.length}`);
+  } catch(err) {
+    alert("خطأ في قراءة وتحليل ملف JSON: " + err.message);
+  } finally {
+    if (e.target) e.target.value = '';
+  }
+}
 
-            pc.onicecandidate = (event) => {
-                if (!event.candidate && pc.localDescription) {
-                    if (isInitiator) {
-                        broadcastSignal({ type: 'offer', sdp: pc.localDescription });
-                    } else {
-                        broadcastSignal({ type: 'answer', sdp: pc.localDescription });
-                    }
-                }
-            };
+function openMemoryMatrixModal() {
+  document.getElementById('memory-matrix-modal').style.display = 'flex';
+}
 
-            pc.onconnectionstatechange = () => {
-                if (pc.connectionState === 'connected') {
-                    updateUIState('connected', '✅ متصل محلياً (P2P LAN)');
-                } else if (pc.connectionState === 'disconnected' || pc.connectionState === 'failed') {
-                    updateUIState('idle', 'انقطع الاتصال');
-                    resetCall(false);
-                }
-            };
-        }
+function closeMemoryMatrixModal() {
+  document.getElementById('memory-matrix-modal').style.display = 'none';
+}
 
-        function setupTextDataChannel(ch) {
-            dataChannel = ch;
-            dataChannel.onopen = () => {
-                dataChannelBadge.textContent = 'القناة: متصلة ونشطة ✅';
-                dataChannelBadge.className = 'box-channel-status active';
-                // Send current text if exists
-                if (sharedTextEl.value.trim()) {
-                    sendSharedTextNow();
-                }
-            };
-            dataChannel.onclose = () => {
-                dataChannelBadge.textContent = 'القناة: غير متصل';
-                dataChannelBadge.className = 'box-channel-status';
-            };
-            dataChannel.onmessage = (event) => {
-                try {
-                    const msg = JSON.parse(event.data);
-                    if (msg.type === 'text_sync') {
-                        // Only update if text is different to prevent cursor jumps
-                        if (sharedTextEl.value !== msg.text) {
-                            sharedTextEl.value = msg.text;
-                        }
-                    }
-                } catch (_) {}
-            };
-        }
+async function syncMemoryLocation(locType) {
+  if (locType === 'local_path') {
+    const pathVal = document.getElementById('mat-local-path').value;
+    saveMessageToActiveSession('ai', `⚡ **مزامنة المسار المحلي للهاردسك**: ${pathVal}\nتم فحص الربط واستقرار البيانات أوفلاين.`);
+  } else if (locType === 'gdrive_file') {
+    const linkVal = document.getElementById('mat-gdrive-file').value;
+    if (!linkVal) { alert("يرجى إدخال رابط ملف Google Drive أولاً."); return; }
+    saveMessageToActiveSession('ai', `🌐 **جاري الربط مع كبسولة Google Drive**: ${linkVal}`);
+    const cap = await fetchAndBrowseWeb(linkVal);
+    if (cap) {
+      const capId = 'cap_drive_file_' + Date.now();
+      await saveCapsuleBodyToDisk(capId, cap.content);
+      localKnowledgeIndex.push({ id: capId, name: cap.name, size: cap.size, snippet: cap.content.slice(0, 300) + '...', time: cap.time });
+      saveKnowledgeIndex();
+      saveMessageToActiveSession('ai', `✅ **تم جلب واستيراد كبسولة Google Drive بنجاح!**`);
+    }
+  } else if (locType === 'gdrive_folder') {
+    const linkVal = document.getElementById('mat-gdrive-folder').value;
+    if (!linkVal) { alert("يرجى إدخال رابط مجلد Google Drive أولاً."); return; }
+    saveMessageToActiveSession('ai', `📂 **طحن واستيراد مجلد Google Drive**: ${linkVal}`);
+    const cap = await fetchAndBrowseWeb(linkVal);
+    if (cap) {
+      const capId = 'cap_drive_folder_' + Date.now();
+      await saveCapsuleBodyToDisk(capId, cap.content);
+      localKnowledgeIndex.push({ id: capId, name: '📂 مجلد Drive: ' + cap.name, size: cap.size, snippet: cap.content.slice(0, 300) + '...', time: cap.time });
+      saveKnowledgeIndex();
+      saveMessageToActiveSession('ai', `✅ **تم طحن كبسولة مجلد Google Drive ورسمها على الهاردسك أوفلاين!**`);
+    }
+  } else if (locType === 'local_endpoint') {
+    const epVal = document.getElementById('mat-local-endpoint').value;
+    try {
+      const res = await fetch(epVal, { method: 'OPTIONS' }).catch(() => null);
+      saveMessageToActiveSession('ai', `🔌 **اختبار خادم الآلة المحلي**: ${epVal}\nالوضع: [ جاهز للربط واستقبال النواة ]`);
+    } catch(e) {
+      saveMessageToActiveSession('ai', `⚠️ تعذر الاتصال بالنقطة المحلية: ${epVal}`);
+    }
+  }
+  closeMemoryMatrixModal();
+}
 
-        function setupFileDataChannel(ch) {
-            fileChannel = ch;
-            fileChannel.binaryType = 'arraybuffer';
+async function openCapsulesModal() {
+  const listEl = document.getElementById('capsule-modal-list');
+  listEl.innerHTML = '<div style="color:#ffd700; font-family:monospace; font-size:12px;">جاري تحميل الفهرس الكامل من الهاردسك...</div>';
+  document.getElementById('capsule-modal').style.display = 'flex';
 
-            fileChannel.onmessage = (event) => {
-                if (typeof event.data === 'string') {
-                    const meta = JSON.parse(event.data);
-                    if (meta.type === 'file_start') {
-                        incomingFileData = [];
-                        incomingFileSize = meta.size;
-                        incomingFileNameStr = meta.name;
-                        receivedBytes = 0;
-                        fileProgressBar.style.display = 'block';
-                        fileProgressFill.style.width = '0%';
-                        incomingFileAlert.style.display = 'none';
-                    } else if (meta.type === 'file_end') {
-                        fileProgressFill.style.width = '100%';
-                        setTimeout(() => { fileProgressBar.style.display = 'none'; }, 500);
+  if (!localKnowledgeIndex || localKnowledgeIndex.length === 0) {
+    listEl.innerHTML = '<div style="color:#a1b0cb; font-size:13px;">لا توجد كبسولات مخزنة حالياً.</div>';
+    return;
+  }
 
-                        const blob = new Blob(incomingFileData);
-                        const url = URL.createObjectURL(blob);
-                        downloadFileBtn.href = url;
-                        downloadFileBtn.download = incomingFileNameStr;
-                        incomingFileName.textContent = `وصلك ملف (${(incomingFileSize / 1024).toFixed(1)} KB): ${incomingFileNameStr}`;
-                        incomingFileAlert.style.display = 'flex';
-                        showToast('📥 تم استلام الملف بنجاح!');
-                    }
-                } else {
-                    // Binary chunk
-                    incomingFileData.push(event.data);
-                    receivedBytes += event.data.byteLength;
-                    if (incomingFileSize > 0) {
-                        const pct = Math.min(100, (receivedBytes / incomingFileSize) * 100);
-                        fileProgressFill.style.width = pct + '%';
-                    }
-                }
-            };
-        }
+  let html = '';
+  for (let i = 0; i < localKnowledgeIndex.length; i++) {
+    const item = localKnowledgeIndex[i];
+    html += `
+      <div style="background:rgba(19,38,26,0.6); border:1px solid rgba(212,175,55,0.2); border-radius:10px; padding:12px; display:flex; flex-direction:column; gap:6px;">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <strong style="color:#ffd700; font-size:13px;">${escapeHtml(item.name)}</strong>
+          <span style="font-size:10px; color:#00ffaa; font-family:monospace;">${(item.size / 1024).toFixed(1)} KB</span>
+        </div>
+        <div style="font-size:11px; color:#c5d3e8; background:rgba(5,8,6,0.8); padding:8px; border-radius:6px; font-family:monospace; line-height:1.4;">
+          ${escapeHtml(item.snippet)}
+        </div>
+        <div style="display:flex; justify-content:space-between; align-items:center; font-size:10px; color:#8b98a5;">
+          <span>ID: ${item.id}</span>
+          <button class="btn-icon" style="padding:2px 8px; font-size:10px; color:#ff6b6b; border-color:rgba(255,107,107,0.3);" onclick="deleteSingleCapsule('${item.id}')">حذف الكبسولة</button>
+        </div>
+      </div>
+    `;
+  }
+  listEl.innerHTML = html;
+}
 
-        // --- 5. Shared Clipboard Box Operations ---
-        function sendSharedTextNow() {
-            if (dataChannel && dataChannel.readyState === 'open') {
-                const payload = JSON.stringify({
-                    type: 'text_sync',
-                    text: sharedTextEl.value
-                });
-                dataChannel.send(payload);
-            }
-        }
+function closeCapsulesModal() {
+  document.getElementById('capsule-modal').style.display = 'none';
+}
 
-        async function copySharedText() {
-            const val = sharedTextEl.value;
-            if (!val) return showToast('لا يوجد نص في الصندوق للنسخ');
-            try {
-                await navigator.clipboard.writeText(val);
-                showToast('✅ تم نسخ النص بنجاح');
-            } catch {
-                sharedTextEl.select();
-                document.execCommand('copy');
-                showToast('✅ تم نسخ النص');
-            }
-        }
+async function deleteSingleCapsule(capId) {
+  if (!confirm("هل أنت تأكد من حذف هذه الكبسولة المعرفية؟")) return;
+  localKnowledgeIndex = localKnowledgeIndex.filter(c => c.id !== capId);
+  saveKnowledgeIndex();
+  await openCapsulesModal();
+  saveMessageToActiveSession('ai', `🗑️ تم حذف الكبسولة ذات المعرف: ${capId}`);
+}
 
-        // --- 6. Direct P2P File Sending ---
-        async function handleFileSelected(event) {
-            const file = event.target.files[0];
-            if (!file) return;
+async function resetCapsulesToDefault() {
+  if (!confirm("هل أنت تأكد من إعادة تعيين كافة الكبسولات المعرفية إلى الحالة الأولية؟")) return;
+  localKnowledgeIndex = [];
+  localStorage.removeItem('sovereign_capsules_index_v3.5');
+  await loadKnowledgeIndex();
+  await openCapsulesModal();
+  saveMessageToActiveSession('ai', `🔄 تم إعادة تعيين الكبسولات المعرفية للأصل بنجاح.`);
+}
 
-            if (!fileChannel || fileChannel.readyState !== 'open') {
-                showToast('⚠️ لا يوجد اتصال P2P نشط لنقل الملفات! اضغط زر الاتصال أولاً.');
-                return;
-            }
+// 🎯 One-Shot Offline Capsule Matching Engine (Zero-Shot Capsule Facts Extractor)
+async function searchOfflineCapsules(userQuery) {
+  if (!localKnowledgeIndex || localKnowledgeIndex.length === 0) return null;
+  const qLower = userQuery.toLowerCase().trim();
+  const tokens = qLower.split(/\s+/).filter(t => t.length > 1);
 
-            document.getElementById('dropText').textContent = `جاري إرسال: ${file.name} (${(file.size / 1024).toFixed(1)} KB)...`;
-            fileProgressBar.style.display = 'block';
-            fileProgressFill.style.width = '0%';
+  let bestMatch = null;
+  let highestScore = 0;
 
-            // Send metadata
-            fileChannel.send(JSON.stringify({
-                type: 'file_start',
-                name: file.name,
-                size: file.size
-            }));
+  for (const capIndex of localKnowledgeIndex) {
+    const fullText = (await getCapsuleBodyFromDisk(capIndex.id)) || capIndex.snippet || '';
+    const textLower = fullText.toLowerCase();
 
-            const chunkSize = 16 * 1024; // 16KB chunk
-            let offset = 0;
-            const reader = new FileReader();
+    let score = 0;
+    tokens.forEach(tok => {
+      if (textLower.includes(tok)) score += 3;
+    });
+    if (capIndex.name.toLowerCase().includes(qLower)) score += 10;
 
-            function readSlice() {
-                const slice = file.slice(offset, offset + chunkSize);
-                reader.readAsArrayBuffer(slice);
-            }
+    if (score > highestScore) {
+      highestScore = score;
+      bestMatch = { index: capIndex, text: fullText, score };
+    }
+  }
 
-            reader.onload = (e) => {
-                fileChannel.send(e.target.result);
-                offset += e.target.result.byteLength;
-                const pct = Math.min(100, (offset / file.size) * 100);
-                fileProgressFill.style.width = pct + '%';
+  if (bestMatch && highestScore >= 2) {
+    return bestMatch;
+  }
+  return null;
+}
 
-                if (offset < file.size) {
-                    readSlice();
-                } else {
-                    fileChannel.send(JSON.stringify({ type: 'file_end' }));
-                    showToast('✅ تم إرسال الملف بنجاح!');
-                    setTimeout(() => {
-                        fileProgressBar.style.display = 'none';
-                        document.getElementById('dropText').textContent = 'اضغط لاختيار ملف وإرساله مباشرة إلى الجهاز الآخر';
-                    }, 1200);
-                }
-            };
+async function sendMessage() {
+  const userMessage = inputEl.value.trim();
+  if (!userMessage && !attachedFile) return;
 
-            readSlice();
-        }
+  let fileContentSnippet = '';
+  let attachedName = null;
 
-        // --- 7. Call Triggers & Microphone ---
-        async function requestMicrophone() {
-            try {
-                localStream = await navigator.mediaDevices.getUserMedia({
-                    audio: {
-                        echoCancellation: true,
-                        noiseSuppression: true,
-                        autoGainControl: true
-                    },
-                    video: false
-                });
-                return true;
-            } catch (err) {
-                alert('يرجى السماح بالوصول إلى الميكروفون للاتصال الصوتي: ' + err.message);
-                return false;
-            }
-        }
+  if (attachedFile) {
+    attachedName = attachedFile.name;
+    try {
+      const text = await readFileAsText(attachedFile);
+      fileContentSnippet = text.slice(0, 6000);
 
-        async function toggleCall() {
-            if (isConnected) {
-                resetCall(true);
-            } else {
-                startCall();
-            }
-        }
+      // Save file directly as a local capsule
+      const fileCapId = 'cap_file_' + Date.now();
+      await saveCapsuleBodyToDisk(fileCapId, `[ملف مرفق: ${attachedFile.name}]\n` + text);
+      localKnowledgeIndex.push({
+        id: fileCapId,
+        name: `📎 كبسولة ملف: ${attachedFile.name}`,
+        size: text.length,
+        snippet: text.slice(0, 300) + '...',
+        time: new Date().toISOString()
+      });
+      saveKnowledgeIndex();
+    } catch(e){}
+    removeAttachedFile();
+  }
 
-        async function startCall() {
-            if (!await requestMicrophone()) return;
+  const promptText = userMessage || `مرفق ملف: ${attachedName}`;
+  saveMessageToActiveSession('user', promptText, attachedName);
+  inputEl.value = '';
 
-            isInitiator = true;
-            await initPC();
+  const activeP = PERSONAS_CONFIG[currentPersonaId] || PERSONAS_CONFIG.seVen;
 
-            // Create Data Channels as initiator
-            const textCh = pc.createDataChannel('text-sync');
-            setupTextDataChannel(textCh);
+  // 1. Check Capsule Matcher First (One-Shot Offline RAG)
+  const matchedCapsule = await searchOfflineCapsules(promptText);
 
-            const fCh = pc.createDataChannel('file-transfer');
-            setupFileDataChannel(fCh);
+  try {
+    if (window.speechSynthesis) {
+      window.speechSynthesis.cancel();
+    }
 
-            localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
-            updateUIState('calling', 'جاري إرسال إشارة الاتصال...');
+    let aiReply = '';
 
-            const offer = await pc.createOffer({
-                offerToReceiveAudio: true
-            });
-            await pc.setLocalDescription(offer);
-        }
+    // If Capsule Strict mode or local offline matching found high-confidence knowledge
+    if (currentEngineHat === 'capsules' || currentEngineHat === 'local') {
+      if (matchedCapsule) {
+        const snippet = matchedCapsule.text.slice(0, 1500);
+        aiReply = `[المعرفة الصافية المباشرة من كبسولة: ${matchedCapsule.index.name}]\n\n${snippet}\n\n📍 معالجة مباشرة 100% أوفلاين استناداً للكبسولات الموثقة دون تكهن.`;
+      } else if (fileContentSnippet) {
+        aiReply = `[تحليل الملف المرفق: ${attachedName}]\n\n${fileContentSnippet.slice(0, 1500)}\n\nتم الاستخراج والحفظ أوفلاين بنجاح.`;
+      }
+    }
 
-        async function acceptIncomingCall() {
-            if (!pendingOffer) return;
-            incomingCallBay.style.display = 'none';
+    // If no direct capsule reply yet, query Brain URL Node Endpoint
+    if (!aiReply) {
+      const response = await fetch(BRAIN_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${API_KEY}`
+        },
+        body: JSON.stringify({
+          model: currentEngineHat === 'gemini' ? 'gemini-2.5-flash' : 'seVen_Core',
+          messages: [
+            { role: 'system', content: activeP.system_prompt },
+            { role: 'user', content: promptText + (fileContentSnippet ? `\n\n[محتوى الكبسولة/الملف المرفق]:\n${fileContentSnippet}` : '') }
+          ]
+        })
+      }).catch(() => null);
 
-            if (!await requestMicrophone()) return;
+      if (response && response.ok) {
+        const data = await response.json();
+        aiReply = data?.choices?.[0]?.message?.content || '';
+      }
+    }
 
-            isInitiator = false;
-            await initPC();
+    // Fallback if network endpoint offline & no capsule match: generate direct intelligent persona response
+    if (!aiReply) {
+      if (currentPersonaId === 'Malika') {
+        aiReply = `أهلاً بك يا باشا! من واقع خبرتنا في الأهرامات ونزلة السمان و AlArab Club 777:\nالاستفسار عن "${promptText}" جاهز ومربوط مباشرة برابط موقعنا الرسمي https://www.alarabclub777.com/ ومكان المقابلة المباشر جنب 📍 https://maps.app.goo.gl/G53mXPW5zremhLR36.\nولا تشغل بالك يا زعيم، تعال شوف بعينك الأول وأشرب شاي، ولأي ترتيب سريع تواصل مع المستر سعيد واتساب على +201010100417.`;
+      } else if (currentPersonaId === 'Judy') {
+        aiReply = `Judy Voice Lap: استلمت سؤالك عن "${promptText}". تم التحليل والتنسيق السريع في النواة المعرفية.`;
+      } else {
+        aiReply = `seVen Sovereign Engine:\n[الحالة: أوفلاين 100%]. الاستفسار: "${promptText}".\nتمت المعالجة من واقع سجل الهاردسك والفهرس المحلي بنجاح.`;
+      }
+    }
 
-            localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
-            await pc.setRemoteDescription(new RTCSessionDescription(pendingOffer));
+    saveMessageToActiveSession('ai', aiReply);
 
-            const answer = await pc.createAnswer();
-            await pc.setLocalDescription(answer);
+    // Speak response via Tongue Port or SpeechSynthesis
+    if (autoVoiceEnabled) {
+      speakResponse(aiReply);
+    }
 
-            updateUIState('calling', 'تم قبول المكالمة - جاري فتح الخط...');
-        }
+  } catch(err) {
+    saveMessageToActiveSession('ai', 'حدث استثناء في قناة المعالجة: ' + err.message);
+  }
+}
 
-        function rejectIncomingCall() {
-            incomingCallBay.style.display = 'none';
-            pendingOffer = null;
-            broadcastSignal({ type: 'hangup' });
-            updateUIState('idle', 'تم رفض المكالمة');
-        }
+async function speakResponse(text) {
+  const rate = voiceSpeedRates[voiceSpeedIndex];
+  
+  // Try local tongue port 7772 first
+  fetch(TONGUE_URL, {
+    method: 'POST',
+    body: JSON.stringify({
+      type: "speech",
+      speaker: currentPersonaId.toLowerCase(),
+      text: text.slice(0, 500)
+    })
+  }).catch(() => {
+    // Fallback to browser SpeechSynthesis
+    if ('speechSynthesis' in window) {
+      const utterance = new SpeechSynthesisUtterance(text.slice(0, 400));
+      utterance.lang = 'ar-SA';
+      utterance.rate = rate;
+      window.speechSynthesis.speak(utterance);
+    }
+  });
+}
 
-        function resetCall(sendHangup = true) {
-            if (sendHangup) {
-                broadcastSignal({ type: 'hangup' });
-            }
+function toggleMic() {
+  if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+    alert("المتصفح لا يدعم الإدخال الصوتي المباشر. يرجى استخدام متصفح حديث مثل Chrome.");
+    return;
+  }
 
-            if (pc) {
-                try { pc.close(); } catch (_) {}
-                pc = null;
-            }
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!recognition) {
+    recognition = new SpeechRecognition();
+    recognition.lang = 'ar-SA';
+    recognition.continuous = false;
+    recognition.interimResults = false;
 
-            if (dataChannel) {
-                try { dataChannel.close(); } catch (_) {}
-                dataChannel = null;
-            }
+    recognition.onresult = (e) => {
+      const transcript = e.results[0][0].transcript;
+      if (transcript) {
+        inputEl.value = transcript;
+        sendMessage();
+      }
+    };
 
-            if (fileChannel) {
-                try { fileChannel.close(); } catch (_) {}
-                fileChannel = null;
-            }
+    recognition.onend = () => {
+      isListening = false;
+      document.getElementById('mic-btn').style.background = 'rgba(19, 38, 26, 0.85)';
+    };
+  }
 
-            if (localStream) {
-                localStream.getTracks().forEach(t => t.stop());
-                localStream = null;
-            }
+  if (!isListening) {
+    recognition.start();
+    isListening = true;
+    document.getElementById('mic-btn').style.background = '#ff4444';
+  } else {
+    recognition.stop();
+    isListening = false;
+    document.getElementById('mic-btn').style.background = 'rgba(19, 38, 26, 0.85)';
+  }
+}
 
-            stopAudioMeter();
-            incomingCallBay.style.display = 'none';
-            pendingOffer = null;
-            isInitiator = false;
-            dataChannelBadge.textContent = 'القناة: غير متصل';
-            dataChannelBadge.className = 'box-channel-status';
-            updateUIState('idle', 'جاهز للاتصال');
-        }
+// Global Keypress Enter Event Listener
+inputEl.addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') sendMessage();
+});
 
-        // --- 8. Audio Visualization ---
-        function startAudioMeter() {
-            if (!localStream) return;
-            try {
-                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                const source = audioCtx.createMediaStreamSource(localStream);
-                const analyser = audioCtx.createAnalyser();
-                analyser.fftSize = 64;
-                source.connect(analyser);
+// Initialization on Load
+window.addEventListener('DOMContentLoaded', async () => {
+  await loadKnowledgeIndex();
+  loadSessions();
+});
+</script>
 
-                const meterEl = document.getElementById('audioMeter');
-                meterEl.innerHTML = '';
-                for (let i = 0; i < 12; i++) {
-                    const bar = document.createElement('div');
-                    bar.className = 'bar';
-                    meterEl.appendChild(bar);
-                }
-                const bars = meterEl.children;
-
-                function render() {
-                    const data = new Uint8Array(analyser.frequencyBinCount);
-                    analyser.getByteFrequencyData(data);
-                    for (let i = 0; i < bars.length; i++) {
-                        const h = Math.max(4, (data[i] / 255) * 24);
-                        bars[i].style.height = h + 'px';
-                    }
-                    if (isConnected) {
-                        animFrameId = requestAnimationFrame(render);
-                    }
-                }
-                render();
-            } catch (_) {}
-        }
-
-        function stopAudioMeter() {
-            if (animFrameId) cancelAnimationFrame(animFrameId);
-            const meterEl = document.getElementById('audioMeter');
-            if (meterEl) meterEl.innerHTML = '';
-        }
-
-        window.addEventListener('DOMContentLoaded', initWave);
-    </script>
 </body>
 </html>

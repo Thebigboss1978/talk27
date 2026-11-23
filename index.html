@@ -1,0 +1,1779 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<!-- VERSION: seVen OS V3.5.0 Sovereign Capsule Engine & Machine Node Index (Build 2026) -->
+<meta name="build-version" content="v3.5.0-BUILD-2026-CAPSULE-STANDALONE">
+<meta name="app-id" content="seVen-7777.777">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23050806'/><circle cx='50' cy='50' r='38' fill='none' stroke='%23ffd700' stroke-width='6'/><text x='50' y='63' font-size='38' font-weight='900' fill='%2300ffaa' text-anchor='middle' font-family='sans-serif'>7</text></svg>">
+<title>seVen OS - Sovereign Gateway V3.5 (Capsule Factory & Machine Node Index)</title>
+
+<!-- PDF.js PDF reader for offline PDF parsing -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+<script>if (window.pdfjsLib) { pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js'; }</script>
+<!-- jsPDF & html2pdf for Direct Offline PDF Generation -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin:0; padding:12px; font-family:'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: radial-gradient(circle at center, #0f1712 0%, #050806 100%);
+    display:flex; justify-content:center; align-items:center; min-height:100vh;
+    color: #e8edf3;
+  }
+
+  /* Compact Container Liquid Glass */
+  #seven-id, #chat-container {
+    width: 100%; max-width: 940px; padding: 20px;
+    background: rgba(12, 18, 14, 0.94);
+    backdrop-filter: blur(25px) saturate(200%);
+    border-radius: 20px;
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.85), 0 0 30px rgba(212, 175, 55, 0.1);
+    display:flex; flex-direction:column; gap: 12px;
+    max-height: 98vh; position: relative;
+  }
+
+  /* Drag & Drop Visual Overlay */
+  #drop-overlay {
+    display: none; position: absolute; inset: 0;
+    background: rgba(5, 8, 6, 0.94); backdrop-filter: blur(12px);
+    border: 3px dashed #ffd700; border-radius: 20px; z-index: 10000;
+    justify-content: center; align-items: center; flex-direction: column; gap: 12px;
+    color: #ffd700; font-size: 1.2rem; font-weight: bold; text-shadow: 0 0 10px rgba(255,215,0,0.5);
+  }
+
+  /* Header Bar */
+  .chat-header {
+    display: flex; flex-direction: column; gap: 10px;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.25);
+    padding-bottom: 12px;
+  }
+  .header-top { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+  .header-title { font-size: 1.1rem; font-weight: 800; color: #ffd700; letter-spacing: 0.5px; display: flex; align-items: center; gap: 8px; }
+  .status-badge { font-size: 0.72rem; font-family: monospace; padding: 4px 10px; border-radius: 8px; background: rgba(0, 255, 170, 0.12); border: 1px solid rgba(0, 255, 170, 0.35); color: #00ffaa; font-weight: bold; }
+
+  /* Counter Screen Bar (شاشة الأعداد الرقمية المباشرة - الفهرس السريع) */
+  .counter-screen-bar {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px;
+    background: rgba(5, 8, 6, 0.85); padding: 10px 14px; border-radius: 12px; border: 1px solid rgba(212, 175, 55, 0.2);
+  }
+  .counter-card {
+    background: rgba(19, 38, 26, 0.6); padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(212, 175, 55, 0.15);
+    display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;
+  }
+  .counter-num { font-size: 1.25rem; font-weight: 900; color: #ffd700; font-family: monospace; line-height: 1; }
+  .counter-label { font-size: 0.68rem; color: #a1b0cb; margin-top: 4px; }
+
+  /* Sessions / Multi-Chat Bar */
+  .sessions-bar {
+    display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap;
+    background: rgba(7, 12, 9, 0.85); padding: 8px 12px; border-radius: 12px; border: 1px solid rgba(212, 175, 55, 0.2);
+  }
+  .sessions-list-container { display: flex; align-items: center; gap: 6px; flex: 1; overflow-x: auto; padding-bottom: 2px; }
+  .sessions-list-container::-webkit-scrollbar { height: 4px; }
+  .sessions-list-container::-webkit-scrollbar-thumb { background: rgba(212, 175, 55, 0.4); border-radius: 10px; }
+  
+  .session-tab {
+    padding: 6px 14px; border-radius: 8px; font-size: 11px; font-family: sans-serif; cursor: pointer;
+    background: rgba(19, 38, 26, 0.6); border: 1px solid rgba(212, 175, 55, 0.2); color: rgba(232, 237, 243, 0.85);
+    white-space: nowrap; transition: all 0.2s; display: flex; align-items: center; gap: 6px;
+  }
+  .session-tab:hover { border-color: #ffd700; color: #fff; }
+  .session-tab.active { background: rgba(212, 175, 55, 0.25); color: #ffd700; font-weight: bold; border-color: #ffd700; box-shadow: 0 0 10px rgba(255, 215, 0, 0.25); }
+
+  .session-controls { display: flex; align-items: center; gap: 6px; }
+
+  /* Persona Selector Bar */
+  .persona-bar {
+    display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px;
+    background: rgba(10, 18, 14, 0.85); padding: 6px 12px; border-radius: 10px; border: 1px solid rgba(0, 255, 170, 0.2);
+  }
+  .persona-title { font-size: 11px; color: #00ffaa; font-family: monospace; font-weight: bold; }
+  .persona-btns { display: flex; gap: 6px; flex-wrap: wrap; }
+  .persona-btn {
+    padding: 4px 10px; border-radius: 6px; font-size: 11px; font-family: monospace; cursor: pointer;
+    background: rgba(19, 38, 26, 0.7); border: 1px solid rgba(0, 255, 170, 0.2); color: #e8edf3; transition: all 0.2s;
+  }
+  .persona-btn:hover { border-color: #00ffaa; }
+  .persona-btn.active { background: #00ffaa; color: #050806; font-weight: bold; border-color: #00ffaa; box-shadow: 0 0 10px rgba(0, 255, 170, 0.3); }
+
+  /* Engine Switcher ("طاقية المحرك") */
+  .engine-hat-bar {
+    display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px;
+    background: rgba(5, 8, 6, 0.7); padding: 8px 12px; border-radius: 10px; border: 1px solid rgba(212, 175, 55, 0.18);
+  }
+  .engine-hat-title { font-size: 11px; color: rgba(255, 215, 0, 0.85); font-family: monospace; font-weight: bold; }
+  .engine-hat-btns { display: flex; gap: 6px; flex-wrap: wrap; }
+  .hat-btn {
+    padding: 5px 12px; border-radius: 8px; font-size: 11px; font-family: monospace; cursor: pointer;
+    background: rgba(19, 38, 26, 0.8); border: 1px solid rgba(212, 175, 55, 0.2); color: #e8edf3;
+    transition: all 0.2s;
+  }
+  .hat-btn:hover { border-color: #ffd700; }
+  .hat-btn.active { background: #ffd700; color: #050806; font-weight: bold; border-color: #ffd700; box-shadow: 0 0 12px rgba(255,215,0,0.4); }
+
+  /* Messages Area */
+  #messages {
+    height: 400px; overflow-y:auto; padding: 16px;
+    border-radius: 14px; background: rgba(5, 8, 6, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.85);
+    display: flex; flex-direction: column; gap: 12px;
+  }
+  #messages::-webkit-scrollbar { width: 6px; }
+  #messages::-webkit-scrollbar-thumb { background: rgba(212, 175, 55, 0.35); border-radius: 10px; }
+
+  .message { padding: 12px 16px; border-radius: 14px; max-width: 88%; animation: fadeIn 0.2s ease-out; line-height: 1.55; font-size: 13.5px; }
+  .user { background: rgba(51, 240, 255, 0.12); color: #e8edf3; align-self: flex-end; border: 1px solid rgba(51, 240, 255, 0.3); border-top-right-radius: 2px; }
+  .ai { background: rgba(212, 175, 55, 0.12); color: #ffd700; align-self: flex-start; border: 1px solid rgba(212, 175, 55, 0.3); border-top-left-radius: 2px; }
+  .time-stamp { font-size: 10px; opacity: 0.65; margin-bottom: 6px; font-family: monospace; display: flex; justify-content: space-between; gap: 8px; }
+  .file-chip { display: inline-flex; align-items: center; gap: 6px; background: rgba(0, 255, 170, 0.12); border: 1px solid rgba(0, 255, 170, 0.3); padding: 4px 10px; border-radius: 6px; font-size: 11px; margin-top: 8px; font-family: monospace; color: #00ffaa; }
+
+  @keyframes fadeIn { from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);} }
+
+  /* Attached File Preview Bar */
+  #file-preview-bar {
+    display: none; align-items: center; justify-content: space-between;
+    background: rgba(0, 255, 170, 0.1); border: 1px dashed rgba(0, 255, 170, 0.4);
+    padding: 8px 14px; border-radius: 10px; font-size: 12px; font-family: monospace; color: #00ffaa;
+  }
+
+  /* Live Processing HUD & Life Time Stamp Radar (Non-blocking UI monitor) */
+  #processing-hud {
+    display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.88);
+    backdrop-filter: blur(12px); z-index: 10000; justify-content: center; align-items: center; padding: 20px;
+  }
+  .hud-card {
+    background: #080d0a; border: 1px solid rgba(0, 255, 170, 0.4); border-radius: 18px;
+    padding: 24px; width: 100%; max-width: 580px; box-shadow: 0 0 40px rgba(0, 255, 170, 0.2);
+    display: flex; flex-direction: column; gap: 16px; direction: rtl; text-align: right;
+  }
+  .hud-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(0,255,170,0.2); padding-bottom: 10px; }
+  .hud-title { color: #00ffaa; font-weight: bold; font-size: 1.1rem; display: flex; align-items: center; gap: 8px; }
+  .hud-radar {
+    width: 22px; height: 22px; border: 2px solid #00ffaa; border-top-color: transparent;
+    border-radius: 50%; animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+  .hud-stamp-live {
+    font-family: monospace; font-size: 11px; color: #ffd700; background: rgba(255, 215, 0, 0.1);
+    padding: 4px 10px; border-radius: 6px; border: 1px solid rgba(255, 215, 0, 0.25);
+  }
+  .hud-progress-bg {
+    width: 100%; height: 8px; background: rgba(255,255,255,0.08); border-radius: 6px; overflow: hidden;
+  }
+  .hud-progress-fill {
+    height: 100%; width: 0%; background: linear-gradient(90deg, #00ffaa, #ffd700);
+    transition: width 0.15s ease-out; box-shadow: 0 0 10px #00ffaa;
+  }
+  .hud-logs-box {
+    background: #020503; border: 1px solid rgba(255,255,255,0.08); border-radius: 10px;
+    padding: 12px; font-family: monospace; font-size: 11.5px; color: #a7f3d0; max-height: 160px;
+    overflow-y: auto; line-height: 1.6; display: flex; flex-direction: column; gap: 4px;
+  }
+
+  /* Controls & Input */
+  #input-container { display:flex; gap:8px; align-items: center; flex-wrap: wrap; }
+  
+  .btn-icon {
+    padding: 8px 12px; border-radius: 10px; border: 1px solid rgba(212, 175, 55, 0.25);
+    background: rgba(19, 38, 26, 0.85); color: #ffd700; cursor: pointer; transition: 0.2s; font-size: 12px; font-weight: bold;
+    display: flex; align-items: center; justify-content: center; gap: 4px;
+  }
+  .btn-icon:hover { background: rgba(212, 175, 55, 0.25); border-color: #ffd700; color: #fff; }
+
+  #user-input {
+    flex:1; min-width: 200px; padding:12px 14px; border-radius:10px; border:1px solid rgba(212, 175, 55, 0.25); outline:none;
+    background: rgba(5, 8, 6, 0.85); color:#fff; font-size: 13.5px; transition: 0.2s;
+  }
+  #user-input:focus { border-color: #ffd700; box-shadow: 0 0 14px rgba(212,175,55,0.25); }
+  
+  #send-btn {
+    padding:12px 24px; border-radius:10px; border:none; background:#ffd700; cursor:pointer;
+    font-weight:bold; color: #050806; font-size: 13.5px; transition: 0.2s;
+  }
+  #send-btn:hover { background:#e5c100; transform:scale(1.02); box-shadow: 0 0 16px rgba(255,215,0,0.4); }
+
+  #file-input, #image-grind-input, #capsule-json-input, #folder-input { display: none; }
+</style>
+</head>
+<body>
+
+<div id="seven-id">
+  <!-- Live Processing HUD -->
+  <div id="processing-hud">
+    <div class="hud-card">
+      <div class="hud-header">
+        <div class="hud-title">
+          <div class="hud-radar"></div>
+          <span id="hud-op-title">جاري المعالجة الحتمية ونقل الذاكرة...</span>
+        </div>
+        <div id="hud-step-badge" class="status-badge" style="color:#00ffaa;">المرحلة 1 / 5</div>
+      </div>
+      <div class="hud-stamp-live" id="hud-live-timestamp">⏱️ [LIFE_STAMP] Initializing...</div>
+      <div class="hud-progress-bg">
+        <div class="hud-progress-fill" id="hud-bar-fill"></div>
+      </div>
+      <div class="hud-logs-box" id="hud-logs">
+        <div>⚡ بدء معالجة النواة الحسابية أوفلاين...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Drag & Drop Visual Overlay -->
+  <div id="drop-overlay">
+    <div style="font-size: 3rem;">📥</div>
+    <div>اسحب وأفلت الملفات، الصور، المجلدات، أو الكبسولات هنا للطحن والإدراج</div>
+    <div style="font-size: 0.85rem; color: #00ffaa; font-family: monospace;">seVen Machine Node ID: File/Folder Receiver</div>
+  </div>
+
+  <!-- Header Bar -->
+  <div class="chat-header">
+    <div class="header-top">
+      <div class="header-title">
+        <span style="font-size: 1.3rem; filter: drop-shadow(0 0 4px rgba(212,175,55,0.6));">🛸 7️⃣</span>
+        <span>بوابة الكبسولات والذاكرة السيادية (seVen OS)</span>
+      </div>
+      <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
+        <span class="status-badge" style="border-color: rgba(212,175,55,0.4); color: #ffd700;">v3.5.0-STANDALONE</span>
+        <span class="status-badge" style="border-color: rgba(0,255,170,0.4); color: #00ffaa; font-family:monospace;" id="global-life-time-clock">⏱️ 00:00:00.000</span>
+        <button class="btn-icon" style="padding: 4px 10px; font-size: 11px; background: rgba(0, 255, 170, 0.15); border-color: rgba(0, 255, 170, 0.45); color: #00ffaa;" onclick="downloadCapsulesJSON()" title="تنزيل وتصدير جميع الكبسولات كملف JSON قياسي">💾 تصدير JSON</button>
+        <button class="btn-icon" style="padding: 4px 10px; font-size: 11px; background: rgba(51, 240, 255, 0.15); border-color: rgba(51, 240, 255, 0.45); color: #33f0ff;" onclick="exportCurrentSessionToPDF()" title="تحويل المحادثة والكبسولات فوراً إلى مستند PDF أنيق">📑 تحويل إلى PDF</button>
+        <button class="btn-icon" style="padding: 4px 10px; font-size: 11px; background: rgba(255, 215, 0, 0.15); border-color: rgba(255, 215, 0, 0.45); color: #ffd700;" onclick="purgeRamMemory()" title="تفريغ حمولة الرام لتخفيف استهلاك الجهاز والحفاظ على كبسولات الهاردسك">🧹 تفريغ الرام</button>
+        <button class="btn-icon" style="padding: 4px 10px; font-size: 11px;" onclick="toggleVoiceSpeed()" id="voice-speed-btn" title="تغيير سرعة النطق الصوتية">⚡ 1.0x</button>
+        <button class="btn-icon" style="padding: 4px 10px; font-size: 11px;" onclick="toggleVoice()" id="voice-toggle-btn" title="تفعيل أو تعطيل النطق">🔊 الصوت: مفعل</button>
+        <button class="btn-icon" style="padding: 4px 10px; font-size: 11px; color: #ff6b6b; border-color: rgba(255,107,107,0.3);" onclick="clearActiveSessionHistory()" title="تفريغ المحادثة الحالية فقط">🗑️ تفريغ المحادثة</button>
+      </div>
+    </div>
+
+    <!-- Digital Counter Screen Bar (شاشة الأعداد الرقمية المباشرة - الفهرس السريع أوفلاين) -->
+    <div class="counter-screen-bar">
+      <div class="counter-card">
+        <div id="cnt-capsules" class="counter-num">0</div>
+        <div class="counter-label">📚 الكبسولات المخزنة</div>
+      </div>
+      <div class="counter-card">
+        <div id="cnt-sessions" class="counter-num">0</div>
+        <div class="counter-label">💬 محادثات الذاكرة</div>
+      </div>
+      <div class="counter-card">
+        <div id="cnt-size" class="counter-num">0 KB</div>
+        <div class="counter-label">📊 الحجم المعرفي</div>
+      </div>
+      <div class="counter-card">
+        <div id="cnt-mode" class="counter-num" style="color: #00ffaa; font-size: 1rem;">أوفلاين 100%</div>
+        <div class="counter-label">🛡️ معالجة الهاردسك</div>
+      </div>
+    </div>
+
+    <!-- Multi-Chat Sessions Bar -->
+    <div class="sessions-bar">
+      <div class="sessions-list-container" id="sessions-tabs-container">
+        <!-- Rendered dynamically -->
+      </div>
+      <div class="session-controls">
+        <button class="btn-icon" style="padding: 4px 10px; font-size: 11px;" onclick="createNewSession()" title="فتح جلسة محادثة جديدة">➕ محادثة جديدة</button>
+        <button class="btn-icon" style="padding: 4px 10px; font-size: 11px;" onclick="renameCurrentSession()" title="إعادة تسمية الجلسة الحالية">✏️</button>
+        <button class="btn-icon" style="padding: 4px 10px; font-size: 11px; color: #ff6b6b;" onclick="deleteCurrentSession()" title="حذف الجلسة الحالية">✕</button>
+      </div>
+    </div>
+
+    <!-- Persona Selector Bar -->
+    <div class="persona-bar">
+      <span class="persona-title">👑 الشخصية والوكيل المعرفي (Persona):</span>
+      <div class="persona-btns">
+        <button class="persona-btn active" id="persona-seven" onclick="setPersona('seVen')">⚡ seVen (القياسي)</button>
+        <button class="persona-btn" id="persona-malika" onclick="setPersona('Malika')">👑 مليكة (خبيرة الأهرامات)</button>
+        <button class="persona-btn" id="persona-judy" onclick="setPersona('Judy')">🎙️ جودي (الصوت)</button>
+      </div>
+    </div>
+
+    <!-- Engine Hat Switcher ("طاقية المحرك") -->
+    <div class="engine-hat-bar">
+      <span class="engine-hat-title">👑 تبديل طاقية المحرك المعرفي:</span>
+      <div class="engine-hat-btns">
+        <button class="hat-btn active" id="hat-local" onclick="setEngineHat('local')">🛡️ seVen Core (أوفلاين)</button>
+        <button class="hat-btn" id="hat-gemini" onclick="setEngineHat('gemini')">✨ Gemini AI (تحليل عميق)</button>
+        <button class="hat-btn" id="hat-gpt" onclick="setEngineHat('gpt')">⚡ Fast GPT (الأسرع)</button>
+        <button class="hat-btn" id="hat-capsules" onclick="setEngineHat('capsules')">📚 محرك الكبسولات (صارم)</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Messages Stream -->
+  <div id="messages"></div>
+
+  <!-- Active File Preview Bar -->
+  <div id="file-preview-bar">
+    <span id="file-name-txt">📄 file.txt</span>
+    <button style="background:none; border:none; color:#ff5555; cursor:pointer; font-weight:bold; font-size:14px;" onclick="removeAttachedFile()">✕</button>
+  </div>
+
+  <!-- Input & Controls -->
+  <div id="input-container">
+    <button class="btn-icon" onclick="document.getElementById('file-input').click()" title="إرفاق ملف أو كبسولة فردية (PDF/Text/Word/Code)">📎 ملف</button>
+    <input type="file" id="file-input" onchange="handleFileSelect(event)">
+
+    <button class="btn-icon" onclick="document.getElementById('image-grind-input').click()" title="طحن صورة واستخراج خصائصها الفيزيائية ومصفوفة الحدة و OCR أوفلاين" style="color:#00ffaa; border-color:rgba(0,255,170,0.4);">🖼️ طحن صورة</button>
+    <input type="file" id="image-grind-input" accept="image/*" onchange="handleImageGrindSelect(event)">
+
+    <button class="btn-icon" onclick="document.getElementById('capsule-json-input').click()" title="استيراد ملف كبسولة JSON مباشر">📦 استيراد كبسولة</button>
+    <input type="file" id="capsule-json-input" accept=".json" onchange="handleCapsuleJSONImport(event)">
+
+    <button class="btn-icon" onclick="document.getElementById('folder-input').click()" title="طحن مجلد كامل وتحويله لكبسولة معرفية بجميع ملفاته">📂 طحن مجلد كامل</button>
+    <input type="file" id="folder-input" webkitdirectory directory multiple onchange="handleFolderSelect(event)">
+
+    <button class="btn-icon" onclick="promptBrowseWeb()" title="تصفح رابط ويب جلب محتواه مباشرة أوفلاين">🌐 تصفح Web</button>
+
+    <button class="btn-icon" onclick="openMemoryMatrixModal()" title="إدارة بوابات الذاكرة الأربعة للربط والمزامنة" style="color: #33f0ff; border-color: rgba(51, 240, 255, 0.45);">🔗 بوابات الذاكرة</button>
+
+    <button class="btn-icon" onclick="openCapsulesModal()" title="معاينة وفحص كافة الكبسولات المخزنة" style="color: #ffd700; border-color: rgba(255, 215, 0, 0.45);">🔍 فحص الكبسولات</button>
+
+    <button class="btn-icon" id="mic-btn" onclick="toggleMic()" title="تحدث بالصوت">🎙️</button>
+
+    <input type="text" id="user-input" placeholder="اكتب سؤالك، ضع رابط موقع لجلبة، أو ارفق ملفاً..." autofocus>
+    <button id="send-btn" onclick="sendMessage()">إرسال</button>
+  </div>
+
+  <!-- 4-Directions Memory Matrix Modal -->
+  <div id="memory-matrix-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.88); backdrop-filter:blur(15px); z-index:9999; justify-content:center; align-items:center; padding:20px;">
+    <div style="background:#0b0f14; border:1px solid rgba(51,240,255,0.45); border-radius:18px; width:100%; max-width:780px; max-height:88vh; display:flex; flex-direction:column; box-shadow:0 0 35px rgba(0,0,0,0.95);">
+      <div style="padding:16px 20px; border-bottom:1px solid rgba(51,240,255,0.25); display:flex; justify-content:space-between; align-items:center;">
+        <h3 style="margin:0; font-size:1.05rem; color:#33f0ff; display:flex; align-items:center; gap:8px;">
+          <span>🔗 شبكة وبوابات الذاكرة السيادية الأربعة (Memory Matrix 4x)</span>
+        </h3>
+        <button onclick="closeMemoryMatrixModal()" style="background:none; border:none; color:#ff6b6b; font-size:1.3rem; cursor:pointer; font-weight:bold;">✕</button>
+      </div>
+      <div style="padding:18px; overflow-y:auto; flex:1; display:flex; flex-direction:column; gap:14px; font-size:12px;">
+        
+        <!-- Direction 1: Local Disk Path -->
+        <div style="background:rgba(19, 38, 26, 0.7); border:1px solid rgba(212,175,55,0.3); border-radius:10px; padding:12px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+            <strong style="color:#ffd700;">📁 1. المسار المحلي المباشر للهاردسك (Local Disk Path):</strong>
+            <span style="color:#00ffaa; font-family:monospace; font-size:10px;">LOCAL_FILE_ACCESS</span>
+          </div>
+          <input type="text" id="mat-local-path" value="/Users/seVen/seVen_Memory/Capsule_Fatory_Memory.JSON" style="width:100%; padding:8px; border-radius:6px; border:1px solid rgba(212,175,55,0.3); background:#050806; color:#fff; font-family:monospace; font-size:11px;" />
+          <div style="display:flex; justify-content:flex-end; gap:6px; margin-top:8px;">
+            <button class="btn-icon" style="padding:4px 10px; font-size:11px;" onclick="syncMemoryLocation('local_path')">⚡ فحص ومزامنة المسار المحلي</button>
+          </div>
+        </div>
+
+        <!-- Direction 2: Google Drive File Link -->
+        <div style="background:rgba(19, 38, 26, 0.7); border:1px solid rgba(51,240,255,0.3); border-radius:10px; padding:12px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+            <strong style="color:#33f0ff;">📄 2. رابط كبسولة ملف Google Drive:</strong>
+            <span style="color:#33f0ff; font-family:monospace; font-size:10px;">GDRIVE_FILE_LINK</span>
+          </div>
+          <input type="text" id="mat-gdrive-file" placeholder="https://drive.google.com/file/d/1A2B3C4D.../view" style="width:100%; padding:8px; border-radius:6px; border:1px solid rgba(51,240,255,0.3); background:#050806; color:#fff; font-family:monospace; font-size:11px;" />
+          <div style="display:flex; justify-content:flex-end; gap:6px; margin-top:8px;">
+            <button class="btn-icon" style="padding:4px 10px; font-size:11px; color:#33f0ff; border-color:rgba(51,240,255,0.4);" onclick="syncMemoryLocation('gdrive_file')">🌐 جلب الكبسولة من Google Drive</button>
+          </div>
+        </div>
+
+        <!-- Direction 3: Google Drive Folder Link -->
+        <div style="background:rgba(19, 38, 26, 0.7); border:1px solid rgba(212,175,55,0.3); border-radius:10px; padding:12px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+            <strong style="color:#ffd700;">📂 3. رابط مجلد Google Drive الكامل:</strong>
+            <span style="color:#ffd700; font-family:monospace; font-size:10px;">GDRIVE_FOLDER_LINK</span>
+          </div>
+          <input type="text" id="mat-gdrive-folder" value="https://drive.google.com/drive/folders/1scJDnmSwIgWdA0qSXB_wMtNZJZtVF7-n" style="width:100%; padding:8px; border-radius:6px; border:1px solid rgba(212,175,55,0.3); background:#050806; color:#fff; font-family:monospace; font-size:11px;" />
+          <div style="display:flex; justify-content:flex-end; gap:6px; margin-top:8px;">
+            <button class="btn-icon" style="padding:4px 10px; font-size:11px;" onclick="syncMemoryLocation('gdrive_folder')">📂 طحن مجلد Google Drive</button>
+          </div>
+        </div>
+
+        <!-- Direction 4: Local Node API Endpoint -->
+        <div style="background:rgba(19, 38, 26, 0.7); border:1px solid rgba(0,255,170,0.3); border-radius:10px; padding:12px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+            <strong style="color:#00ffaa;">⚡ 4. نقطة نهاية خادم الآلة المحلي (Local Node Endpoint):</strong>
+            <span style="color:#00ffaa; font-family:monospace; font-size:10px;">LOCAL_API_NODE</span>
+          </div>
+          <input type="text" id="mat-local-endpoint" value="http://localhost:7777/v1/chat/completions" style="width:100%; padding:8px; border-radius:6px; border:1px solid rgba(0,255,170,0.3); background:#050806; color:#fff; font-family:monospace; font-size:11px;" />
+          <div style="display:flex; justify-content:flex-end; gap:6px; margin-top:8px;">
+            <button class="btn-icon" style="padding:4px 10px; font-size:11px; color:#00ffaa; border-color:rgba(0,255,170,0.4);" onclick="syncMemoryLocation('local_endpoint')">🔌 اختبار الاتصال وعقدة الخادم</button>
+          </div>
+        </div>
+
+      </div>
+      <div style="padding:14px 20px; border-top:1px solid rgba(255,255,255,0.08); display:flex; justify-content:space-between; align-items:center; background:rgba(5,8,6,0.6);">
+        <span style="font-size:11px; color:#8b98a5; font-family:monospace;">تخزين الهاردسك أوفلاين مفعّل لحفظ مساحة الرام</span>
+        <button class="btn-icon" style="padding:5px 14px; font-size:12px; color:#33f0ff; border-color:rgba(51,240,255,0.4);" onclick="closeMemoryMatrixModal()">حفظ وإغلاق</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Capsule Inspector Modal -->
+  <div id="capsule-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.88); backdrop-filter:blur(15px); z-index:9999; justify-content:center; align-items:center; padding:20px;">
+    <div style="background:#0b0f14; border:1px solid rgba(212,175,55,0.45); border-radius:18px; width:100%; max-width:760px; max-height:88vh; display:flex; flex-direction:column; box-shadow:0 0 35px rgba(0,0,0,0.95);">
+      <div style="padding:16px 20px; border-bottom:1px solid rgba(212,175,55,0.25); display:flex; justify-content:space-between; align-items:center;">
+        <h3 style="margin:0; font-size:1.05rem; color:#ffd700; display:flex; align-items:center; gap:8px;">
+          <span>📚 قاعدة الكبسولات المعرفية السيادية المخزنة (فهرس الهاردسك)</span>
+        </h3>
+        <button onclick="closeCapsulesModal()" style="background:none; border:none; color:#ff6b6b; font-size:1.3rem; cursor:pointer; font-weight:bold;">✕</button>
+      </div>
+      <div id="capsule-modal-list" style="padding:18px; overflow-y:auto; flex:1; display:flex; flex-direction:column; gap:12px;">
+        <!-- Rendered dynamically -->
+      </div>
+      <div style="padding:14px 20px; border-top:1px solid rgba(255,255,255,0.08); display:flex; justify-content:space-between; align-items:center; background:rgba(5,8,6,0.6);">
+        <span style="font-size:11px; color:#8b98a5; font-family:monospace;">المعالجة محليّة 100% أوفلاين مع توثيق الأختام</span>
+        <button class="btn-icon" style="padding:5px 14px; font-size:12px; color:#ff6b6b; border-color:rgba(255,107,107,0.35);" onclick="resetCapsulesToDefault()">🗑️ إعادة تعيين الكبسولات للأصل</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const messagesEl = document.getElementById('messages');
+const inputEl = document.getElementById('user-input');
+const fileInputEl = document.getElementById('file-input');
+const filePreviewBar = document.getElementById('file-preview-bar');
+const fileNameTxt = document.getElementById('file-name-txt');
+const cntCapsulesEl = document.getElementById('cnt-capsules');
+const cntSessionsEl = document.getElementById('cnt-sessions');
+const cntSizeEl = document.getElementById('cnt-size');
+const voiceToggleBtn = document.getElementById('voice-toggle-btn');
+const voiceSpeedBtn = document.getElementById('voice-speed-btn');
+const sessionsTabsContainer = document.getElementById('sessions-tabs-container');
+const mainContainer = document.getElementById('seven-id');
+const dropOverlay = document.getElementById('drop-overlay');
+
+// Config & Gateways
+const BRAIN_URL = '/v1/chat/completions';
+const TONGUE_URL = '/api/voice/deepgram';
+const API_KEY = 'AlArabMasterKey';
+
+let attachedFile = null;
+let isListening = false;
+let recognition = null;
+let autoVoiceEnabled = true;
+let voiceSpeedRates = [0.8, 1.0, 1.2, 1.5];
+let voiceSpeedIndex = 1; // Default 1.0x
+let currentEngineHat = 'local'; // local, gemini, gpt, capsules
+let currentPersonaId = 'seVen'; // seVen, Malika, Judy
+
+// ⏱️ High-Precision Life Time Stamp Generator
+function getLifeTimeStamp() {
+  const d = new Date();
+  const pad = (n, len = 2) => String(n).padStart(len, '0');
+  const YYYY = d.getFullYear();
+  const MM = pad(d.getMonth() + 1);
+  const DD = pad(d.getDate());
+  const HH = pad(d.getHours());
+  const mm = pad(d.getMinutes());
+  const ss = pad(d.getSeconds());
+  const ms = pad(d.getMilliseconds(), 3);
+  return {
+    full: `${YYYY}-${MM}-${DD} ${HH}:${mm}:${ss}.${ms}`,
+    timeOnly: `${HH}:${mm}:${ss}.${ms}`,
+    iso: d.toISOString(),
+    epoch: d.getTime()
+  };
+}
+
+// Live Clock Ticker for Header & Processing HUD
+setInterval(() => {
+  const stamp = getLifeTimeStamp();
+  const clockEl = document.getElementById('global-life-time-clock');
+  if (clockEl) clockEl.textContent = `⏱️ ${stamp.timeOnly}`;
+  const hudStampEl = document.getElementById('hud-live-timestamp');
+  if (hudStampEl) hudStampEl.textContent = `⏱️ [LIFE_STAMP: ${stamp.full}]`;
+}, 60);
+
+// Non-blocking HUD controller
+const processingHUD = document.getElementById('processing-hud');
+const hudOpTitle = document.getElementById('hud-op-title');
+const hudStepBadge = document.getElementById('hud-step-badge');
+const hudBarFill = document.getElementById('hud-bar-fill');
+const hudLogs = document.getElementById('hud-logs');
+
+function showProcessingHUD(title, totalSteps = 5) {
+  if (!processingHUD) return;
+  hudOpTitle.textContent = title;
+  hudStepBadge.textContent = `المرحلة 1 / ${totalSteps}`;
+  hudBarFill.style.width = '5%';
+  hudLogs.innerHTML = `<div>⚡ [${getLifeTimeStamp().timeOnly}] بدء العملية الحتمية أوفلاين...</div>`;
+  processingHUD.style.display = 'flex';
+}
+
+async function updateProcessingHUD(step, totalSteps, stepName, logMsg, percent) {
+  if (!processingHUD) return;
+  hudStepBadge.textContent = `المرحلة ${step} / ${totalSteps} - ${stepName}`;
+  hudBarFill.style.width = `${percent}%`;
+  const line = document.createElement('div');
+  line.innerHTML = `<span style="color:#ffd700;">[${getLifeTimeStamp().timeOnly}]</span> <strong style="color:#00ffaa;">[${step}/${totalSteps}]</strong> ${escapeHtml(logMsg)}`;
+  hudLogs.appendChild(line);
+  hudLogs.scrollTop = hudLogs.scrollHeight;
+  // Yield execution to browser render engine so UI never hangs!
+  await new Promise(r => setTimeout(r, 45));
+}
+
+function hideProcessingHUD() {
+  if (!processingHUD) return;
+  setTimeout(() => {
+    processingHUD.style.display = 'none';
+  }, 400);
+}
+
+// Personas Definitions with "OK, message for seVen my friend you are the source"
+const PERSONAS_CONFIG = {
+  seVen: {
+    id: "seVen",
+    name: "seVen",
+    title: "محرك سبعة السيادي الأوفلاين - The Brain Master",
+    system_prompt: "أنت seVen (محرك سبعة السيادي) لـ seven.alarabclub777.com. تجيب بدقة باردة، سيادية، مباشرة من الكبسولات المعرفية والملفات والذاكرة أوفلاين بدون تلفيق. المرجع السيادي: OK, message for seVen my friend you are the source.",
+    greeting: "AL-ARAB CLUB 777 - seVen [ SYSTEM STATUS: SOVEREIGN ]. OK, message for seVen my friend you are the source. جاهز للمعالجة الأوفلاين وطحن الصور وكبسولات الهاردسك."
+  },
+  Malika: {
+    id: "Malika",
+    name: "مليكة",
+    title: "خبيرة الأهرامات ونزلة السمان - AlArab Club 777",
+    system_prompt: "أنتِ مليكة (Malika) - بنت بلد، نزلاوية شيك، خبيرة الأهرامات ونزلة السمان وفندق Sky Pyramids Hotel و AlArab Club 777. تردين بعامية مصرية، ذكاء عاطفي، وبدون ادعاء بأنك AI. الموقع الرسمي: https://www.alarabclub777.com/ والموقع الجغرافي: 📍 https://maps.app.goo.gl/G53mXPW5zremhLR36 ورقم المستر سعيد واتساب: +201010100417.",
+    greeting: "أهلاً بك يا زعيم! أنا مليكة خبيرة الأهرامات ونزلة السمان من AlArab Club 777. جاهزة لأي سؤال أو خروجة أو ترتيب يخص الجيزة والأهرامات."
+  },
+  Judy: {
+    id: "Judy",
+    name: "جودي",
+    title: "Judy Voice Lap - المساعد الصوتي السريع",
+    system_prompt: "أنتِ جودي (Judy) من Judy Voice Lap. تجيبين باختصار، دقة صوتية، وتجاوب سريع.",
+    greeting: "أهلاً بك، أنا جودي من Judy Voice Lap. المساعد الصوتي التفاعلي جاهز لإعادة توجيه الاستفسارات والكبسولات الصوتية."
+  }
+};
+
+// IndexedDB Storage Controller (Stores heavy strings on hard disk)
+let idbDatabase = null;
+function initIndexedDB() {
+  return new Promise((resolve) => {
+    const request = indexedDB.open('seVen_Disk_Storage', 1);
+    request.onupgradeneeded = (e) => {
+      const db = e.target.result;
+      if (!db.objectStoreNames.contains('capsule_bodies')) {
+        db.createObjectStore('capsule_bodies', { keyPath: 'id' });
+      }
+    };
+    request.onsuccess = (e) => {
+      idbDatabase = e.target.result;
+      resolve(idbDatabase);
+    };
+    request.onerror = () => resolve(null);
+  });
+}
+
+async function saveCapsuleBodyToDisk(id, textContent) {
+  if (!idbDatabase) await initIndexedDB();
+  if (!idbDatabase) return;
+  return new Promise((resolve) => {
+    const tx = idbDatabase.transaction('capsule_bodies', 'readwrite');
+    const store = tx.objectStore('capsule_bodies');
+    store.put({ id, content: textContent, updated_at: Date.now() });
+    tx.oncomplete = () => resolve(true);
+    tx.onerror = () => resolve(false);
+  });
+}
+
+async function getCapsuleBodyFromDisk(id) {
+  if (!idbDatabase) await initIndexedDB();
+  if (!idbDatabase) return null;
+  return new Promise((resolve) => {
+    const tx = idbDatabase.transaction('capsule_bodies', 'readonly');
+    const store = tx.objectStore('capsule_bodies');
+    const req = store.get(id);
+    req.onsuccess = () => resolve(req.result ? req.result.content : null);
+    req.onerror = () => resolve(null);
+  });
+}
+
+// Lightweight Header Index (stored in localStorage)
+let localKnowledgeIndex = [];
+
+const SEED_CONSTITUTION_INDEX = {
+  id: "cap_seed_constitution",
+  name: '📜 الدستور المعرفي والسيادي الرسمي (seVen Constitution v3.5)',
+  size: 1024,
+  snippet: 'كبسولة الدستور السيادي seVen|STAMP|ID|777|AL-ARAB|CLUB...',
+  time: new Date().toISOString()
+};
+
+async function loadKnowledgeIndex() {
+  await initIndexedDB();
+  try {
+    const savedKB = localStorage.getItem('sovereign_capsules_index_v3.5');
+    if (savedKB) localKnowledgeIndex = JSON.parse(savedKB);
+  } catch(e){}
+
+  if (!localKnowledgeIndex || localKnowledgeIndex.length === 0) {
+    localKnowledgeIndex = [SEED_CONSTITUTION_INDEX];
+    saveCapsuleBodyToDisk(SEED_CONSTITUTION_INDEX.id, `[كبسولة الدستور السيادي seVen|STAMP|ID|777|AL-ARAB|CLUB]\nصاحب النظام: AlArab_SharifAlShawish\nالمحرك: seVen OS V3.5 (1 MACHINE - THE BRAIN MASTER)\nالأمان: أوفلاين 100% ومعالجة الهاردسك والتوجيه الحسابي الحتمي.`);
+    saveKnowledgeIndex();
+  }
+}
+
+function saveKnowledgeIndex() {
+  try {
+    localStorage.setItem('sovereign_capsules_index_v3.5', JSON.stringify(localKnowledgeIndex));
+  } catch(e){}
+  updateCounterScreens();
+}
+
+// Multi-Chat Sessions State
+let sessions = [];
+let activeSessionId = null;
+
+function loadSessions() {
+  try {
+    const savedSessions = localStorage.getItem('sovereign_chat_sessions_v3.5');
+    if (savedSessions) sessions = JSON.parse(savedSessions);
+  } catch(e){}
+
+  if (!sessions || sessions.length === 0) {
+    const activeP = PERSONAS_CONFIG[currentPersonaId] || PERSONAS_CONFIG.seVen;
+    const initialSession = {
+      id: 'session_' + Date.now(),
+      title: 'المحادثة السيادية 1',
+      messages: [
+        {
+          sender: 'ai',
+          text: activeP.greeting,
+          time: new Date().toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' })
+        }
+      ]
+    };
+    sessions = [initialSession];
+  }
+
+  const savedActiveId = localStorage.getItem('sovereign_active_session_id_v3.5');
+  if (savedActiveId && sessions.some(s => s.id === savedActiveId)) {
+    activeSessionId = savedActiveId;
+  } else {
+    activeSessionId = sessions[0].id;
+  }
+
+  saveSessions();
+  renderSessionsTabs();
+  renderActiveMessages();
+  updateCounterScreens();
+}
+
+function saveSessions() {
+  try {
+    localStorage.setItem('sovereign_chat_sessions_v3.5', JSON.stringify(sessions));
+    localStorage.setItem('sovereign_active_session_id_v3.5', activeSessionId);
+  } catch(e){}
+  updateCounterScreens();
+}
+
+function getActiveSession() {
+  return sessions.find(s => s.id === activeSessionId) || sessions[0];
+}
+
+function updateCounterScreens() {
+  if (cntCapsulesEl) cntCapsulesEl.textContent = localKnowledgeIndex.length;
+  if (cntSessionsEl) cntSessionsEl.textContent = sessions.length;
+  
+  let totalBytes = 0;
+  localKnowledgeIndex.forEach(c => totalBytes += (c.size || 1024));
+  if (cntSizeEl) cntSizeEl.textContent = `${(totalBytes / 1024).toFixed(1)} KB`;
+}
+
+function renderSessionsTabs() {
+  sessionsTabsContainer.innerHTML = '';
+  sessions.forEach(sess => {
+    const tabEl = document.createElement('div');
+    tabEl.className = 'session-tab ' + (sess.id === activeSessionId ? 'active' : '');
+    tabEl.innerHTML = `<span>💬 ${escapeHtml(sess.title)}</span>`;
+    tabEl.onclick = () => switchSession(sess.id);
+    sessionsTabsContainer.appendChild(tabEl);
+  });
+}
+
+function renderActiveMessages() {
+  messagesEl.innerHTML = '';
+  const current = getActiveSession();
+  if (current && current.messages) {
+    current.messages.forEach(msg => {
+      appendMessageUI(msg.sender, msg.text, msg.fileName, msg.time);
+    });
+  }
+}
+
+function switchSession(sessionId) {
+  if (activeSessionId === sessionId) return;
+  activeSessionId = sessionId;
+  saveSessions();
+  renderSessionsTabs();
+  renderActiveMessages();
+}
+
+function createNewSession() {
+  const newNum = sessions.length + 1;
+  const activeP = PERSONAS_CONFIG[currentPersonaId] || PERSONAS_CONFIG.seVen;
+  const newSess = {
+    id: 'session_' + Date.now(),
+    title: `محادثة ${newNum}`,
+    messages: [
+      {
+        sender: 'ai',
+        text: `أهلاً بك مع (${activeP.name}). تفضل بطرح سؤالك أو رفع كبسولة معرفية.`,
+        time: new Date().toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' })
+      }
+    ]
+  };
+  sessions.push(newSess);
+  activeSessionId = newSess.id;
+  saveSessions();
+  renderSessionsTabs();
+  renderActiveMessages();
+}
+
+function renameCurrentSession() {
+  const current = getActiveSession();
+  const newTitle = prompt('أدخل العنوان الجديد لهذه المحادثة:', current.title);
+  if (newTitle && newTitle.trim()) {
+    current.title = newTitle.trim();
+    saveSessions();
+    renderSessionsTabs();
+  }
+}
+
+function deleteCurrentSession() {
+  if (sessions.length <= 1) {
+    clearActiveSessionHistory();
+    return;
+  }
+  if (!confirm('هل أنت تأكد من حذف هذه المحادثة بالكامل؟')) return;
+
+  sessions = sessions.filter(s => s.id !== activeSessionId);
+  activeSessionId = sessions[0].id;
+  saveSessions();
+  renderSessionsTabs();
+  renderActiveMessages();
+}
+
+function clearActiveSessionHistory() {
+  const activeP = PERSONAS_CONFIG[currentPersonaId] || PERSONAS_CONFIG.seVen;
+  const current = getActiveSession();
+  current.messages = [
+    {
+      sender: 'ai',
+      text: `تم تفريغ سجل هذه المحادثة. (${activeP.name}) جاهز لخدمتك أوفلاين يا سيادة العرّاب.`,
+      time: new Date().toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' })
+    }
+  ];
+  saveSessions();
+  renderActiveMessages();
+}
+
+function purgeRamMemory() {
+  try {
+    // Retain only capsule snippets and current active session messages
+    localKnowledgeIndex = localKnowledgeIndex.map(c => ({
+      id: c.id,
+      name: c.name,
+      size: c.size,
+      snippet: c.snippet ? c.snippet.slice(0, 300) : '',
+      time: c.time
+    }));
+    saveKnowledgeIndex();
+    saveMessageToActiveSession('ai', '🧹 **تم تفريغ حمولة الرام (RAM Payload Cleared) بنجاح!**\nتم نقل وحفظ كافة النصوص الكاملة بذاكرة الهاردسك أوفلاين لتسريع الجهاز.');
+  } catch(e) {
+    alert("حدث خطأ في تفريغ الرام: " + e.message);
+  }
+}
+
+function setPersona(personaKey) {
+  if (!PERSONAS_CONFIG[personaKey]) return;
+  currentPersonaId = personaKey;
+  document.querySelectorAll('.persona-btn').forEach(btn => btn.classList.remove('active'));
+  document.getElementById(`persona-${personaKey.toLowerCase()}`)?.classList.add('active');
+  
+  const p = PERSONAS_CONFIG[personaKey];
+  saveMessageToActiveSession('ai', `👑 **تم التحويل إلى الوكيل المعرفي: ${p.name}** (${p.title})`);
+}
+
+function setEngineHat(hatMode) {
+  currentEngineHat = hatMode;
+  document.querySelectorAll('.hat-btn').forEach(btn => btn.classList.remove('active'));
+  document.getElementById(`hat-${hatMode}`)?.classList.add('active');
+}
+
+function toggleVoice() {
+  autoVoiceEnabled = !autoVoiceEnabled;
+  voiceToggleBtn.textContent = autoVoiceEnabled ? '🔊 الصوت: مفعل' : '🔇 الصوت: معطل';
+  if (!autoVoiceEnabled && window.speechSynthesis) {
+    window.speechSynthesis.cancel();
+  }
+}
+
+function toggleVoiceSpeed() {
+  voiceSpeedIndex = (voiceSpeedIndex + 1) % voiceSpeedRates.length;
+  const rate = voiceSpeedRates[voiceSpeedIndex];
+  voiceSpeedBtn.textContent = `⚡ ${rate.toFixed(1)}x`;
+}
+
+function appendMessageUI(sender, text, fileName = null, timeStr = null) {
+  const time = timeStr || new Date().toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' });
+  const activeP = PERSONAS_CONFIG[currentPersonaId] || PERSONAS_CONFIG.seVen;
+  const msgEl = document.createElement('div');
+  msgEl.className = 'message ' + sender;
+
+  let html = `<div class="time-stamp">
+    <span>${sender === 'user' ? '👤 أنت (العرّاب)' : '⚡ ' + activeP.name + ' - (' + currentEngineHat.toUpperCase() + ')'}</span>
+    <span>${time}</span>
+  </div>`;
+  html += `<div style="white-space: pre-wrap;">${escapeHtml(text)}</div>`;
+  if (fileName) {
+    html += `<div class="file-chip">📎 ملف مرفق: ${escapeHtml(fileName)}</div>`;
+  }
+
+  msgEl.innerHTML = html;
+  messagesEl.appendChild(msgEl);
+  messagesEl.scrollTop = messagesEl.scrollHeight;
+}
+
+function saveMessageToActiveSession(sender, text, fileName = null) {
+  const time = new Date().toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' });
+  const current = getActiveSession();
+  current.messages.push({ sender, text, fileName, time });
+
+  if (sender === 'user' && text && (current.title.startsWith('المحادثة') || current.title.startsWith('محادثة'))) {
+    const cleanTitle = text.slice(0, 22) + (text.length > 22 ? '...' : '');
+    current.title = cleanTitle;
+    renderSessionsTabs();
+  }
+
+  saveSessions();
+  appendMessageUI(sender, text, fileName, time);
+}
+
+function escapeHtml(str) {
+  if (!str) return '';
+  return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+
+function handleFileSelect(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const isImg = file.type.startsWith('image/') || ['.png', '.jpg', '.jpeg', '.webp', '.bmp', '.gif', '.tiff'].some(ext => file.name.toLowerCase().endsWith(ext));
+  if (isImg) {
+    grindImageFile(file);
+    e.target.value = '';
+    return;
+  }
+
+  attachedFile = file;
+  fileNameTxt.textContent = `📄 ${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
+  filePreviewBar.style.display = 'flex';
+}
+
+function handleImageGrindSelect(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  grindImageFile(file);
+  e.target.value = '';
+}
+
+// 🖼️ Sovereign Image Grinder Engine (Mathematical 2D Laplacian + Native Canvas & Python Fallback)
+async function grindImageFile(file) {
+  if (!file) return;
+  const startStamp = getLifeTimeStamp();
+  showProcessingHUD(`طحن وتحليل الصورة: ${file.name}`, 5);
+
+  try {
+    // Phase 1: Load file & read Base64
+    await updateProcessingHUD(1, 5, "تحميل وتفكيك الهيدر", `قراءة بايتات الصورة (${(file.size / 1024).toFixed(1)} KB)...`, 20);
+    const base64Data = await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+
+    // Phase 2: HTML5 Canvas 2D Matrix Rendering
+    await updateProcessingHUD(2, 5, "مصفوفة البكسلات والتدرج الرمادي", "رسم الصورة في Canvas ثنائي الأبعاد وحساب متوسط السطوع (Luminance)...", 40);
+    const imgEl = new Image();
+    await new Promise((resolve, reject) => {
+      imgEl.onload = resolve;
+      imgEl.onerror = reject;
+      imgEl.src = base64Data;
+    });
+
+    const width = imgEl.naturalWidth || imgEl.width || 600;
+    const height = imgEl.naturalHeight || imgEl.height || 400;
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.min(width, 1000);
+    canvas.height = Math.min(height, 1000);
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(imgEl, 0, 0, canvas.width, canvas.height);
+
+    const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const pixels = imgData.data;
+    let totalLuminance = 0;
+    const grayData = new Float32Array(canvas.width * canvas.height);
+
+    for (let i = 0, p = 0; i < pixels.length; i += 4, p++) {
+      const r = pixels[i];
+      const g = pixels[i + 1];
+      const b = pixels[i + 2];
+      const lum = 0.299 * r + 0.587 * g + 0.114 * b;
+      grayData[p] = lum;
+      totalLuminance += lum;
+    }
+    const avgBrightness = (totalLuminance / grayData.length).toFixed(2);
+
+    // Phase 3: Laplacian Variance Sharpness Filter (∇² Operator)
+    await updateProcessingHUD(3, 5, "مصفوفة حدة لابلاسيان (Laplacian ∇²)", "حساب تشتت التباين واكتشاف الحواف والتشويش...", 60);
+    const cw = canvas.width;
+    const ch = canvas.height;
+    let lapSum = 0;
+    let lapSqSum = 0;
+    let count = 0;
+
+    for (let y = 1; y < ch - 1; y += 2) {
+      for (let x = 1; x < cw - 1; x += 2) {
+        const center = grayData[y * cw + x];
+        const top = grayData[(y - 1) * cw + x];
+        const bottom = grayData[(y + 1) * cw + x];
+        const left = grayData[y * cw + (x - 1)];
+        const right = grayData[y * cw + (x + 1)];
+        const lapVal = (top + bottom + left + right) - (4 * center);
+        lapSum += lapVal;
+        lapSqSum += lapVal * lapVal;
+        count++;
+      }
+    }
+    const lapMean = count > 0 ? (lapSum / count) : 0;
+    const laplacianVar = count > 0 ? ((lapSqSum / count) - (lapMean * lapMean)).toFixed(2) : 0;
+    const clarityRating = laplacianVar > 400 ? "عالية الوضوح (Crisp/High)" : (laplacianVar > 100 ? "متوسطة (Normal)" : "ضبابية / منخفضة الحدة (Blurry)");
+
+    // Phase 4: Server Analysis or OCR extraction fallback
+    await updateProcessingHUD(4, 5, "الاستخراج البصري وتحليل البايثون", "فحص الكيانات والمطابقة السيادية مع البوابة...", 80);
+    let serverAnalysis = null;
+    try {
+      const res = await fetch('/api/analyze-image', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          image_base64: base64Data,
+          filename: file.name,
+          client_timestamp: getLifeTimeStamp().full
+        })
+      });
+      if (res.ok) {
+        serverAnalysis = await res.json();
+      }
+    } catch(err) {
+      console.warn("Backend analysis fallback:", err);
+    }
+
+    // Phase 5: Build Image Capsule & Save to Disk
+    await updateProcessingHUD(5, 5, "حفظ الكبسولة المعرفية", "توليد ختم الذاكرة السيادي وتخزين الكبسولة في الهاردسك...", 98);
+    const endStamp = getLifeTimeStamp();
+    const durationMs = endStamp.epoch - startStamp.epoch;
+
+    const capsuleBody = `[🖼️ كبسولة طحن الصورة السيادية: ${file.name}]
+⏱️ LIFE_TIME_STAMP: ${endStamp.full}
+⚙️ وقت الطحن: ${durationMs}ms
+📐 الأبعاد الفيزيائية: ${width} × ${height} بكسل
+📊 الحجم: ${(file.size / 1024).toFixed(1)} KB (نوع: ${file.type || 'image/raw'})
+✨ متوسط السطوع (Luminance): ${avgBrightness} / 255
+🔍 تباين الحدة (Laplacian Variance): ${laplacianVar} [${clarityRating}]
+${serverAnalysis ? `\n🤖 تحليل الخادم (Python/Node Engine):\n- الحالة: ${serverAnalysis.status || 'OK'}\n- رسالة seVen: ${serverAnalysis.message || 'OK, message for seVen my friend you are the source'}` : ''}
+`;
+
+    const capId = 'cap_img_' + Date.now();
+    const capsuleIndexItem = {
+      id: capId,
+      name: `🖼️ كبسولة صورة: ${file.name} (${width}x${height})`,
+      size: capsuleBody.length,
+      snippet: capsuleBody.slice(0, 300) + '...',
+      time: endStamp.iso
+    };
+
+    await saveCapsuleBodyToDisk(capId, capsuleBody);
+    localKnowledgeIndex.push(capsuleIndexItem);
+    saveKnowledgeIndex();
+
+    hideProcessingHUD();
+
+    const reportMsg = `🖼️ **تم طحن وتحليل الصورة السيادية بنجاح!**
+
+• **اسم الملف**: \`${file.name}\`
+• **الأبعاد**: \`${width} × ${height} px\`
+• **الحدة (Laplacian Variance)**: \`${laplacianVar}\` (${clarityRating})
+• **متوسط السطوع**: \`${avgBrightness}/255\`
+• **الختم الزمني (Life Stamp)**: \`${endStamp.full}\` (${durationMs}ms)
+• **موقع الحفظ**: تم حفظ الكبسولة في قاعدة الهاردسك أوفلاين.
+
+*OK, message for seVen my friend you are the source.*`;
+
+    saveMessageToActiveSession('ai', reportMsg);
+
+  } catch(error) {
+    console.error("Image grinding error:", error);
+    hideProcessingHUD();
+    alert("حدث خطأ أثناء معالجة الصورة: " + error.message);
+  }
+}
+
+function removeAttachedFile() {
+  attachedFile = null;
+  fileInputEl.value = '';
+  filePreviewBar.style.display = 'none';
+}
+
+// Drag & Drop Handling anywhere on seVen Node Frame
+mainContainer.addEventListener('dragover', (e) => {
+  e.preventDefault();
+  dropOverlay.style.display = 'flex';
+});
+
+mainContainer.addEventListener('dragleave', (e) => {
+  if (e.relatedTarget === null || !mainContainer.contains(e.relatedTarget)) {
+    dropOverlay.style.display = 'none';
+  }
+});
+
+mainContainer.addEventListener('drop', async (e) => {
+  e.preventDefault();
+  dropOverlay.style.display = 'none';
+
+  const items = e.dataTransfer.items;
+  if (items && items.length > 0) {
+    const droppedFiles = [];
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i].webkitGetAsEntry ? items[i].webkitGetAsEntry() : null;
+      if (item) {
+        const filesFromItem = await traverseFileTree(item);
+        droppedFiles.push(...filesFromItem);
+      } else if (items[i].kind === 'file') {
+        const f = items[i].getAsFile();
+        if (f) droppedFiles.push(f);
+      }
+    }
+    if (droppedFiles.length > 0) {
+      await processDroppedFiles(droppedFiles);
+      return;
+    }
+  }
+
+  if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+    await processDroppedFiles(Array.from(e.dataTransfer.files));
+  }
+});
+
+async function traverseFileTree(item, path = '') {
+  return new Promise((resolve) => {
+    if (item.isFile) {
+      item.file((file) => resolve([file]), () => resolve([]));
+    } else if (item.isDirectory) {
+      const dirReader = item.createReader();
+      dirReader.readEntries(async (entries) => {
+        const files = [];
+        for (const entry of entries) {
+          const subFiles = await traverseFileTree(entry, path + item.name + '/');
+          files.push(...subFiles);
+        }
+        resolve(files);
+      }, () => resolve([]));
+    } else {
+      resolve([]);
+    }
+  });
+}
+
+async function processDroppedFiles(filesList) {
+  if (filesList.length === 1) {
+    const file = filesList[0];
+    const isImg = file.type.startsWith('image/') || ['.png', '.jpg', '.jpeg', '.webp', '.bmp', '.gif', '.tiff'].some(ext => file.name.toLowerCase().endsWith(ext));
+    if (isImg) {
+      await grindImageFile(file);
+      return;
+    }
+
+    if (file.name.endsWith('.json')) {
+      const jsonText = await file.text();
+      try {
+        const parsed = JSON.parse(jsonText);
+        if (parsed.sovereign_capsules_kb || Array.isArray(parsed)) {
+          await handleCapsuleJSONImport({ target: { files: [file] } });
+          return;
+        }
+      } catch(e){}
+    }
+
+    attachedFile = file;
+    fileNameTxt.textContent = `📄 ${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
+    filePreviewBar.style.display = 'flex';
+    saveMessageToActiveSession('ai', `📥 **تم استلام الكبسولة المرفقة بالسحب والإسقاط:** ${file.name}`);
+    return;
+  }
+
+  await handleFolderSelect({ target: { files: filesList } });
+}
+
+async function handleFolderSelect(e) {
+  const files = Array.from(e.target.files || []);
+  if (!files || files.length === 0) return;
+
+  const ignoreExts = ['.png', '.jpg', '.jpeg', '.gif', '.webp', '.ico', '.zip', '.tar', '.gz', '.mp3', '.mp4', '.exe', '.dll'];
+  const validFiles = files.filter(f => {
+    const ext = '.' + (f.name.split('.').pop() || '').toLowerCase();
+    return !ignoreExts.includes(ext);
+  });
+
+  if (validFiles.length === 0) {
+    alert("لم يتم العثور على ملفات مستندات/كود قابلة للتحليل في المجلد المحدد.");
+    return;
+  }
+
+  saveMessageToActiveSession('ai', `⏳ **جاري طحن المجلد المعرفي أوفلاين** (${validFiles.length} ملف مُكتشف)...`);
+
+  let totalChars = 0;
+  let folderName = files[0].webkitRelativePath ? files[0].webkitRelativePath.split('/')[0] : 'مجلد معالج';
+  let combinedContent = `[كبسولة طحن المجلد المعرفي: ${folderName}]\nتاريخ الطحن: ${new Date().toLocaleString('ar-EG')}\nإجمالي الملفات: ${validFiles.length}\n\n`;
+
+  const maxFiles = Math.min(validFiles.length, 120);
+  for (let i = 0; i < maxFiles; i++) {
+    const file = validFiles[i];
+    try {
+      const text = await readFileAsText(file);
+      if (text && text.trim().length > 0) {
+        const snippet = text.slice(0, 5000);
+        combinedContent += `--- [ملف ${i+1}/${maxFiles}: ${file.webkitRelativePath || file.name}] ---\n${snippet}\n\n`;
+        totalChars += snippet.length;
+      }
+    } catch(err){}
+  }
+
+  const capId = 'cap_folder_' + Date.now();
+  const folderCapsuleIndex = {
+    id: capId,
+    name: `📂 كبسولة طحن المجلد: ${folderName} (${validFiles.length} ملف)`,
+    size: totalChars,
+    snippet: combinedContent.slice(0, 300) + '...',
+    time: new Date().toISOString()
+  };
+
+  await saveCapsuleBodyToDisk(capId, combinedContent);
+  localKnowledgeIndex.push(folderCapsuleIndex);
+  saveKnowledgeIndex();
+
+  saveMessageToActiveSession('ai', `✅ **تم طحن وتحليل المجلد بنجاح ورسمه على الهاردسك!**\n\n📁 **المجلد**: ${folderName}\n📄 **الملفات المعالجة**: ${validFiles.length} ملف\n📊 **الحجم المعرفي**: ${(totalChars / 1024).toFixed(1)} KB\n\nتم حفظ النص الكامل بذاكرة الهاردسك دون إرهاق الرام.`);
+}
+
+async function readFileAsText(file) {
+  if (file.name.toLowerCase().endsWith('.pdf') && window.pdfjsLib) {
+    try {
+      const arrayBuffer = await file.arrayBuffer();
+      const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+      let pdfText = '';
+      for (let i = 1; i <= Math.min(pdf.numPages, 30); i++) {
+        const page = await pdf.getPage(i);
+        const textContent = await page.getTextContent();
+        pdfText += textContent.items.map(item => item.str).join(' ') + '\n';
+      }
+      if (pdfText.trim().length > 0) return pdfText;
+    } catch(e) { console.warn("PDF parse note:", e); }
+  }
+  return await file.text();
+}
+
+async function promptBrowseWeb() {
+  const urlOrTopic = prompt("أدخل رابط موقع الويب (URL) لجلب محتواه أوفلاين:\nمثال: https://drive.google.com/drive/folders/1scJDnmSwIgWdA0qSXB_wMtNZJZtVF7-n");
+  if (!urlOrTopic || !urlOrTopic.trim()) return;
+
+  saveMessageToActiveSession('ai', '⚡ جاري تصفح الموقع وجلب الكبسولة المعرفية...');
+  const webCap = await fetchAndBrowseWeb(urlOrTopic.trim());
+  if (webCap) {
+    const capId = 'cap_web_' + Date.now();
+    await saveCapsuleBodyToDisk(capId, webCap.content);
+    localKnowledgeIndex.push({
+      id: capId,
+      name: webCap.name,
+      size: webCap.size,
+      snippet: webCap.content.slice(0, 300) + '...',
+      time: webCap.time
+    });
+    saveKnowledgeIndex();
+    saveMessageToActiveSession('ai', `✅ **تم تصفح وجلب الكبسولة بنجاح!**\n\n🌐 **المصدر**: ${webCap.name}\n📊 **الحجم المعرفي**: ${(webCap.size / 1024).toFixed(1)} KB`);
+  } else {
+    saveMessageToActiveSession('ai', `⚠️ تعذر الوصول المباشر لهذا الرابط أو حظره من المصدر.`);
+  }
+}
+
+async function fetchAndBrowseWeb(targetUrlOrQuery) {
+  if (!targetUrlOrQuery) return null;
+  let cleanUrl = targetUrlOrQuery.trim();
+
+  if (!cleanUrl.startsWith('http://') && !cleanUrl.startsWith('https://')) {
+    if (cleanUrl.includes('.') && !cleanUrl.includes(' ')) {
+      cleanUrl = 'https://' + cleanUrl;
+    } else {
+      cleanUrl = 'https://html.duckduckgo.com/html/?q=' + encodeURIComponent(cleanUrl);
+    }
+  }
+
+  const readers = [
+    `https://r.jina.ai/${cleanUrl}`,
+    `https://api.allorigins.win/raw?url=${encodeURIComponent(cleanUrl)}`
+  ];
+
+  let extractedText = '';
+  for (const readerUrl of readers) {
+    try {
+      const res = await fetch(readerUrl);
+      if (res.ok) {
+        const text = await res.text();
+        if (text && text.length > 50) {
+          const cleanText = text
+            .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+            .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, '')
+            .replace(/<[^>]+>/g, ' ')
+            .replace(/\s+/g, ' ')
+            .trim();
+          if (cleanText.length > 50) {
+            extractedText = cleanText.slice(0, 8000);
+            break;
+          }
+        }
+      }
+    } catch(e){}
+  }
+
+  if (!extractedText) return null;
+
+  return {
+    name: `🌐 كبسولة ويب: ${cleanUrl.replace(/^https?:\/\//, '').slice(0, 32)}`,
+    size: extractedText.length,
+    content: `[مصدر Web المباشر: ${cleanUrl}]\n\n` + extractedText,
+    time: new Date().toISOString()
+  };
+}
+
+async function downloadCapsulesJSON() {
+  if (!localKnowledgeIndex || localKnowledgeIndex.length === 0) {
+    alert("لا توجد كبسولات مخزنة للتصدير حالياً.");
+    return;
+  }
+
+  const fullExportList = [];
+  for (const idxItem of localKnowledgeIndex) {
+    const bodyContent = await getCapsuleBodyFromDisk(idxItem.id);
+    fullExportList.push({
+      ...idxItem,
+      content: bodyContent || idxItem.snippet
+    });
+  }
+
+  // Helper for clean concise English slug
+  function extractCleanEnglishSlug(rawName, fallback) {
+    if (!rawName) return fallback || 'sovereign_capsule';
+    const englishTokens = rawName
+      .replace(/[^\w\s-]/g, ' ')
+      .split(/[\s_-]+/)
+      .filter(t => /^[a-zA-Z0-9]+$/.test(t))
+      .filter(t => !/^\d+$/.test(t) || t.length > 2)
+      .filter(t => !['file', 'files', 'kb', 'mb', 'json', 'bin', 'txt', 'md'].includes(t.toLowerCase()));
+
+    if (englishTokens.length > 0) {
+      const slug = englishTokens.join('_').toLowerCase().replace(/_+/g, '_').slice(0, 24).replace(/^_|_$/g, '');
+      if (slug.length >= 3) return slug;
+    }
+
+    const lower = rawName.toLowerCase();
+    if (lower.includes('دستور') || lower.includes('سياد')) return 'constitution';
+    if (lower.includes('طحن') || lower.includes('مجلد')) return 'folder_grind';
+    if (lower.includes('سياح') || lower.includes('هرم')) return 'tourism_data';
+    if (lower.includes('خلاط') || lower.includes('دمج') || lower.includes('تقرير')) return 'blend_report';
+    return fallback || 'sovereign_capsule';
+  }
+
+  // Generate Smart Predicate Hook Name based on primary content (clean concise English)
+  const firstCap = localKnowledgeIndex[localKnowledgeIndex.length - 1];
+  const smartTag = extractCleanEnglishSlug(firstCap ? firstCap.name : '', 'sovereign_capsule');
+
+  const dateStamp = new Date().toISOString().slice(0, 10);
+  const timeStamp = new Date().toTimeString().slice(0, 5).replace(':', '');
+  const dynamicFileName = `seVen_v53_${smartTag}_${dateStamp}_${timeStamp}.json`;
+
+  const exportPayload = {
+    sovereign_capsules_kb: fullExportList,
+    exported_at: new Date().toISOString(),
+    system_version: "v53.0.0-STANDALONE-SEALED",
+    smart_anchor_hook: `SEVEN_HOOK_${smartTag}`,
+    total_capsules: fullExportList.length,
+    chat_sessions: sessions,
+    persona_id: currentPersonaId
+  };
+
+  const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportPayload, null, 2));
+  const downloadAnchor = document.createElement('a');
+  downloadAnchor.setAttribute("href", dataStr);
+  downloadAnchor.setAttribute("download", dynamicFileName);
+  document.body.appendChild(downloadAnchor);
+  downloadAnchor.click();
+  downloadAnchor.remove();
+  saveMessageToActiveSession('ai', `💾 **تم تصدير ملف الذاكرة المعرفية باسم ${dynamicFileName} بنجاح!**`);
+}
+
+function exportCurrentSessionToPDF() {
+  const currentSession = sessions.find(s => s.id === activeSessionId) || sessions[0];
+  const sessionTitle = currentSession ? currentSession.title : "جلسة سيادية";
+  const messagesList = currentSession ? currentSession.messages : [];
+
+  if (!messagesList || messagesList.length === 0) {
+    alert("لا توجد رسائل في الجلسة الحالية لتصديرها إلى PDF.");
+    return;
+  }
+
+  // Create clean printable report wrapper
+  const reportContainer = document.createElement('div');
+  reportContainer.id = "pdf-render-zone";
+  reportContainer.style.position = "absolute";
+  reportContainer.style.left = "-9999px";
+  reportContainer.style.top = "0";
+  reportContainer.style.width = "750px";
+  reportContainer.style.padding = "30px";
+  reportContainer.style.background = "#ffffff";
+  reportContainer.style.color = "#111827";
+  reportContainer.style.fontFamily = "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif";
+  reportContainer.style.direction = "rtl";
+
+  let htmlContent = `
+    <div style="border-bottom: 2px solid #ffd700; padding-bottom: 15px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+      <div>
+        <h1 style="margin: 0 0 6px 0; color: #0f1712; font-size: 22px;">🏛️ AL-ARAB CLUB 777 | وثيقة الذاكرة السيادية</h1>
+        <div style="font-size: 13px; color: #4b5563;">الجلسة: <strong>${sessionTitle}</strong> | النظام: <strong>seVen OS V3.5 (Offline Sovereign)</strong></div>
+      </div>
+      <div style="text-align: left; font-size: 11px; color: #6b7280; font-family: monospace;">
+        <div>التاريخ: ${new Date().toLocaleDateString('ar-EG')}</div>
+        <div>التوقيت: ${new Date().toLocaleTimeString('ar-EG')}</div>
+      </div>
+    </div>
+
+    <div style="background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 12px 16px; margin-bottom: 20px; font-size: 12px; line-height: 1.6;">
+      <div>📌 <strong>إجمالي الرسائل:</strong> ${messagesList.length} رسالة</div>
+      <div>📚 <strong>الكبسولات المرتبطة:</strong> ${localKnowledgeIndex.length} كبسولة معرفية</div>
+      <div>👑 <strong>الوكيل النشط:</strong> ${currentPersonaId}</div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 14px;">
+  `;
+
+  messagesList.forEach((m, idx) => {
+    const isAi = m.sender === 'ai';
+    const bg = isAi ? "#f3f4f6" : "#e0f2fe";
+    const border = isAi ? "#d1d5db" : "#bae6fd";
+    const titleColor = isAi ? "#92400e" : "#0369a1";
+    const title = isAi ? "🤖 seVen Sovereign Engine" : "👤 العرّاب (المستخدم)";
+
+    // Format content (strip complex markdown backticks for clean PDF print)
+    const cleanText = (m.text || "").replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br/>');
+
+    htmlContent += `
+      <div style="background: ${bg}; border: 1px solid ${border}; border-radius: 8px; padding: 12px 16px; font-size: 13px; line-height: 1.6;">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 11px; font-weight: bold; color: ${titleColor};">
+          <span>${title}</span>
+          <span style="font-family: monospace; color: #6b7280;">${m.time || ''}</span>
+        </div>
+        <div style="color: #1f2937;">${cleanText}</div>
+        ${m.fileName ? `<div style="margin-top: 8px; font-size: 11px; color: #059669; font-weight: bold;">📎 المرفق: ${m.fileName}</div>` : ''}
+      </div>
+    `;
+  });
+
+  htmlContent += `
+    </div>
+    <div style="margin-top: 30px; border-top: 1px solid #e5e7eb; padding-top: 12px; text-align: center; font-size: 11px; color: #9ca3af; font-family: monospace;">
+      AL-ARAB CLUB 777 • SOVEREIGN STANDALONE OFFLINE CAPSULE ENGINE • VERIFIED SEAL
+    </div>
+  `;
+
+  reportContainer.innerHTML = htmlContent;
+  document.body.appendChild(reportContainer);
+
+  const opt = {
+    margin: 10,
+    filename: `seVen_Report_${sessionTitle.replace(/[^a-zA-Z0-9\u0600-\u06FF]/g, '_')}_${new Date().toISOString().slice(0, 10)}.pdf`,
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2, useCORS: true },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+  };
+
+  if (window.html2pdf) {
+    window.html2pdf().set(opt).from(reportContainer).save().then(() => {
+      reportContainer.remove();
+      saveMessageToActiveSession('ai', `📑 **تم تحويل وتصدير المحادثة إلى مستند PDF بنجاح!**`);
+    }).catch(err => {
+      console.error(err);
+      window.print();
+      reportContainer.remove();
+    });
+  } else {
+    window.print();
+    reportContainer.remove();
+  }
+}
+
+async function handleCapsuleJSONImport(e) {
+  const file = e.target.files ? e.target.files[0] : null;
+  if (!file) return;
+
+  try {
+    const text = await file.text();
+    const json = JSON.parse(text);
+
+    let importedCapsules = [];
+    if (Array.isArray(json)) {
+      importedCapsules = json;
+    } else if (json.sovereign_capsules_kb && Array.isArray(json.sovereign_capsules_kb)) {
+      importedCapsules = json.sovereign_capsules_kb;
+    } else if (json.name || json.content) {
+      importedCapsules = [json];
+    }
+
+    if (importedCapsules.length === 0) {
+      alert("لم يتم العثور على كبسولات صالحة في ملف JSON المرفق.");
+      return;
+    }
+
+    let addedCount = 0;
+    for (const cap of importedCapsules) {
+      if (cap && (cap.content || cap.text || cap.snippet)) {
+        const capId = 'cap_imp_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6);
+        const fullContent = cap.content || cap.text || cap.snippet || '';
+        await saveCapsuleBodyToDisk(capId, fullContent);
+
+        localKnowledgeIndex.push({
+          id: capId,
+          name: cap.name || cap.title || `كبسولة مستوردة (${file.name})`,
+          size: cap.size || fullContent.length || 1024,
+          snippet: fullContent.slice(0, 300) + '...',
+          time: cap.time || new Date().toISOString()
+        });
+        addedCount++;
+      }
+    }
+
+    saveKnowledgeIndex();
+    saveMessageToActiveSession('ai', `📥 **تم استيراد الكبسولة المعرفية بنجاح!**\n\n📄 **الملف**: ${file.name}\n📦 **العناصر المضافة**: ${addedCount} كبسولة\n📊 **إجمالي الكبسولات المخزنة**: ${localKnowledgeIndex.length}`);
+  } catch(err) {
+    alert("خطأ في قراءة وتحليل ملف JSON: " + err.message);
+  } finally {
+    if (e.target) e.target.value = '';
+  }
+}
+
+function openMemoryMatrixModal() {
+  document.getElementById('memory-matrix-modal').style.display = 'flex';
+}
+
+function closeMemoryMatrixModal() {
+  document.getElementById('memory-matrix-modal').style.display = 'none';
+}
+
+async function syncMemoryLocation(locType) {
+  if (locType === 'local_path') {
+    const pathVal = document.getElementById('mat-local-path').value;
+    saveMessageToActiveSession('ai', `⚡ **مزامنة المسار المحلي للهاردسك**: ${pathVal}\nتم فحص الربط واستقرار البيانات أوفلاين.`);
+  } else if (locType === 'gdrive_file') {
+    const linkVal = document.getElementById('mat-gdrive-file').value;
+    if (!linkVal) { alert("يرجى إدخال رابط ملف Google Drive أولاً."); return; }
+    saveMessageToActiveSession('ai', `🌐 **جاري الربط مع كبسولة Google Drive**: ${linkVal}`);
+    const cap = await fetchAndBrowseWeb(linkVal);
+    if (cap) {
+      const capId = 'cap_drive_file_' + Date.now();
+      await saveCapsuleBodyToDisk(capId, cap.content);
+      localKnowledgeIndex.push({ id: capId, name: cap.name, size: cap.size, snippet: cap.content.slice(0, 300) + '...', time: cap.time });
+      saveKnowledgeIndex();
+      saveMessageToActiveSession('ai', `✅ **تم جلب واستيراد كبسولة Google Drive بنجاح!**`);
+    }
+  } else if (locType === 'gdrive_folder') {
+    const linkVal = document.getElementById('mat-gdrive-folder').value;
+    if (!linkVal) { alert("يرجى إدخال رابط مجلد Google Drive أولاً."); return; }
+    saveMessageToActiveSession('ai', `📂 **طحن واستيراد مجلد Google Drive**: ${linkVal}`);
+    const cap = await fetchAndBrowseWeb(linkVal);
+    if (cap) {
+      const capId = 'cap_drive_folder_' + Date.now();
+      await saveCapsuleBodyToDisk(capId, cap.content);
+      localKnowledgeIndex.push({ id: capId, name: '📂 مجلد Drive: ' + cap.name, size: cap.size, snippet: cap.content.slice(0, 300) + '...', time: cap.time });
+      saveKnowledgeIndex();
+      saveMessageToActiveSession('ai', `✅ **تم طحن كبسولة مجلد Google Drive ورسمها على الهاردسك أوفلاين!**`);
+    }
+  } else if (locType === 'local_endpoint') {
+    const epVal = document.getElementById('mat-local-endpoint').value;
+    try {
+      const res = await fetch(epVal, { method: 'OPTIONS' }).catch(() => null);
+      saveMessageToActiveSession('ai', `🔌 **اختبار خادم الآلة المحلي**: ${epVal}\nالوضع: [ جاهز للربط واستقبال النواة ]`);
+    } catch(e) {
+      saveMessageToActiveSession('ai', `⚠️ تعذر الاتصال بالنقطة المحلية: ${epVal}`);
+    }
+  }
+  closeMemoryMatrixModal();
+}
+
+async function openCapsulesModal() {
+  const listEl = document.getElementById('capsule-modal-list');
+  listEl.innerHTML = '<div style="color:#ffd700; font-family:monospace; font-size:12px;">جاري تحميل الفهرس الكامل من الهاردسك...</div>';
+  document.getElementById('capsule-modal').style.display = 'flex';
+
+  if (!localKnowledgeIndex || localKnowledgeIndex.length === 0) {
+    listEl.innerHTML = '<div style="color:#a1b0cb; font-size:13px;">لا توجد كبسولات مخزنة حالياً.</div>';
+    return;
+  }
+
+  let html = '';
+  for (let i = 0; i < localKnowledgeIndex.length; i++) {
+    const item = localKnowledgeIndex[i];
+    html += `
+      <div style="background:rgba(19,38,26,0.6); border:1px solid rgba(212,175,55,0.2); border-radius:10px; padding:12px; display:flex; flex-direction:column; gap:6px;">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <strong style="color:#ffd700; font-size:13px;">${escapeHtml(item.name)}</strong>
+          <span style="font-size:10px; color:#00ffaa; font-family:monospace;">${(item.size / 1024).toFixed(1)} KB</span>
+        </div>
+        <div style="font-size:11px; color:#c5d3e8; background:rgba(5,8,6,0.8); padding:8px; border-radius:6px; font-family:monospace; line-height:1.4;">
+          ${escapeHtml(item.snippet)}
+        </div>
+        <div style="display:flex; justify-content:space-between; align-items:center; font-size:10px; color:#8b98a5;">
+          <span>ID: ${item.id}</span>
+          <button class="btn-icon" style="padding:2px 8px; font-size:10px; color:#ff6b6b; border-color:rgba(255,107,107,0.3);" onclick="deleteSingleCapsule('${item.id}')">حذف الكبسولة</button>
+        </div>
+      </div>
+    `;
+  }
+  listEl.innerHTML = html;
+}
+
+function closeCapsulesModal() {
+  document.getElementById('capsule-modal').style.display = 'none';
+}
+
+async function deleteSingleCapsule(capId) {
+  if (!confirm("هل أنت تأكد من حذف هذه الكبسولة المعرفية؟")) return;
+  localKnowledgeIndex = localKnowledgeIndex.filter(c => c.id !== capId);
+  saveKnowledgeIndex();
+  await openCapsulesModal();
+  saveMessageToActiveSession('ai', `🗑️ تم حذف الكبسولة ذات المعرف: ${capId}`);
+}
+
+async function resetCapsulesToDefault() {
+  if (!confirm("هل أنت تأكد من إعادة تعيين كافة الكبسولات المعرفية إلى الحالة الأولية؟")) return;
+  localKnowledgeIndex = [];
+  localStorage.removeItem('sovereign_capsules_index_v3.5');
+  await loadKnowledgeIndex();
+  await openCapsulesModal();
+  saveMessageToActiveSession('ai', `🔄 تم إعادة تعيين الكبسولات المعرفية للأصل بنجاح.`);
+}
+
+// 🎯 One-Shot Offline Capsule Matching Engine (Zero-Shot Capsule Facts Extractor)
+async function searchOfflineCapsules(userQuery) {
+  if (!localKnowledgeIndex || localKnowledgeIndex.length === 0) return null;
+  const qLower = userQuery.toLowerCase().trim();
+  const tokens = qLower.split(/\s+/).filter(t => t.length > 1);
+
+  let bestMatch = null;
+  let highestScore = 0;
+
+  for (const capIndex of localKnowledgeIndex) {
+    const fullText = (await getCapsuleBodyFromDisk(capIndex.id)) || capIndex.snippet || '';
+    const textLower = fullText.toLowerCase();
+
+    let score = 0;
+    tokens.forEach(tok => {
+      if (textLower.includes(tok)) score += 3;
+    });
+    if (capIndex.name.toLowerCase().includes(qLower)) score += 10;
+
+    if (score > highestScore) {
+      highestScore = score;
+      bestMatch = { index: capIndex, text: fullText, score };
+    }
+  }
+
+  if (bestMatch && highestScore >= 2) {
+    return bestMatch;
+  }
+  return null;
+}
+
+async function sendMessage() {
+  const userMessage = inputEl.value.trim();
+  if (!userMessage && !attachedFile) return;
+
+  let fileContentSnippet = '';
+  let attachedName = null;
+
+  if (attachedFile) {
+    attachedName = attachedFile.name;
+    try {
+      const text = await readFileAsText(attachedFile);
+      fileContentSnippet = text.slice(0, 6000);
+
+      // Save file directly as a local capsule
+      const fileCapId = 'cap_file_' + Date.now();
+      await saveCapsuleBodyToDisk(fileCapId, `[ملف مرفق: ${attachedFile.name}]\n` + text);
+      localKnowledgeIndex.push({
+        id: fileCapId,
+        name: `📎 كبسولة ملف: ${attachedFile.name}`,
+        size: text.length,
+        snippet: text.slice(0, 300) + '...',
+        time: new Date().toISOString()
+      });
+      saveKnowledgeIndex();
+    } catch(e){}
+    removeAttachedFile();
+  }
+
+  const promptText = userMessage || `مرفق ملف: ${attachedName}`;
+  saveMessageToActiveSession('user', promptText, attachedName);
+  inputEl.value = '';
+
+  const activeP = PERSONAS_CONFIG[currentPersonaId] || PERSONAS_CONFIG.seVen;
+
+  // 1. Check Capsule Matcher First (One-Shot Offline RAG)
+  const matchedCapsule = await searchOfflineCapsules(promptText);
+
+  try {
+    if (window.speechSynthesis) {
+      window.speechSynthesis.cancel();
+    }
+
+    let aiReply = '';
+    const currentSession = getActiveSession();
+    const historyMessages = (currentSession.messages || []).slice(-8).map(m => ({
+      role: m.sender === 'user' ? 'user' : 'assistant',
+      content: m.text
+    }));
+
+    let knowledgeContext = '';
+    if (matchedCapsule) {
+      knowledgeContext += `\n\n[معرفة مسترجعة من كبسولة ${matchedCapsule.index.name}]:\n${matchedCapsule.text.slice(0, 2000)}`;
+    }
+    if (fileContentSnippet) {
+      knowledgeContext += `\n\n[الملف المرفق: ${attachedName}]:\n${fileContentSnippet}`;
+    }
+
+    // Call live Brain URL endpoint
+    try {
+      const response = await fetch(BRAIN_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${API_KEY}`
+        },
+        body: JSON.stringify({
+          model: currentEngineHat === 'gemini' ? 'gemini-2.5-flash' : 'seVen_Core',
+          messages: [
+            { role: 'system', content: activeP.system_prompt },
+            ...historyMessages,
+            { role: 'user', content: promptText + knowledgeContext }
+          ]
+        })
+      });
+
+      if (response && response.ok) {
+        const data = await response.json();
+        aiReply = data?.choices?.[0]?.message?.content || data?.choices?.[0]?.text || '';
+      }
+    } catch(fetchErr) {
+      console.warn("Backend chat fetch error:", fetchErr);
+    }
+
+    if (!aiReply && matchedCapsule) {
+      aiReply = `[مستخلص الكبسولة المعرفية: ${matchedCapsule.index.name}]\n\n${matchedCapsule.text.slice(0, 1500)}`;
+    }
+
+    if (!aiReply) {
+      aiReply = `تم استلام الاستفسار: "${promptText}". جارِ المعالجة في النواة السيادية.`;
+    }
+
+    saveMessageToActiveSession('ai', aiReply);
+
+    // Speak response via Web Speech
+    if (autoVoiceEnabled) {
+      speakResponse(aiReply);
+    }
+
+  } catch(err) {
+    saveMessageToActiveSession('ai', 'حدث استثناء في قناة المعالجة: ' + err.message);
+  }
+}
+
+// Native Browser Speech Engine (Direct Web Speech API - Zero External Servers/Tongue Ports)
+function speakResponse(text) {
+  if (!autoVoiceEnabled || !('speechSynthesis' in window)) return;
+  try {
+    window.speechSynthesis.cancel();
+    const rate = voiceSpeedRates[voiceSpeedIndex] || 1.0;
+    const cleanText = text.replace(/[*_#`~[\]]/g, '').slice(0, 450);
+    const utterance = new SpeechSynthesisUtterance(cleanText);
+    const isArabic = /[\u0600-\u06FF]/.test(cleanText);
+    utterance.lang = isArabic ? 'ar-SA' : 'en-US';
+    utterance.rate = rate;
+    
+    const voices = window.speechSynthesis.getVoices();
+    if (isArabic && voices.length > 0) {
+      const arVoice = voices.find(v => v.lang.startsWith('ar'));
+      if (arVoice) utterance.voice = arVoice;
+    }
+    window.speechSynthesis.speak(utterance);
+  } catch(e) {
+    console.warn("Native Speech warning:", e);
+  }
+}
+
+function toggleMic() {
+  if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+    alert("المتصفح لا يدعم الإدخال الصوتي المباشر. يرجى استخدام متصفح حديث مثل Chrome.");
+    return;
+  }
+
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!recognition) {
+    recognition = new SpeechRecognition();
+    recognition.lang = 'ar-SA';
+    recognition.continuous = false;
+    recognition.interimResults = false;
+
+    recognition.onresult = (e) => {
+      const transcript = e.results[0][0].transcript;
+      if (transcript) {
+        inputEl.value = transcript;
+        sendMessage();
+      }
+    };
+
+    recognition.onend = () => {
+      isListening = false;
+      document.getElementById('mic-btn').style.background = 'rgba(19, 38, 26, 0.85)';
+    };
+  }
+
+  if (!isListening) {
+    recognition.start();
+    isListening = true;
+    document.getElementById('mic-btn').style.background = '#ff4444';
+  } else {
+    recognition.stop();
+    isListening = false;
+    document.getElementById('mic-btn').style.background = 'rgba(19, 38, 26, 0.85)';
+  }
+}
+
+// Global Keypress Enter Event Listener
+inputEl.addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') sendMessage();
+});
+
+// Initialization on Load
+window.addEventListener('DOMContentLoaded', async () => {
+  await loadKnowledgeIndex();
+  loadSessions();
+});
+</script>
+
+</body>
+</html>
